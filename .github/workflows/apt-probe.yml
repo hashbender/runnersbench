@@ -1,0 +1,23 @@
+name: apt probe
+on: workflow_dispatch
+jobs:
+  probe:
+    runs-on: luxor-ubuntu-medium-4c-8g
+    steps:
+      - name: Inspect apt state
+        run: |
+          set -x
+          cat /etc/os-release | head -2
+          ls /etc/apt/sources.list.d/; cat /etc/apt/sources.list.d/*.sources; cat /etc/apt/sources.list 2>/dev/null; cat /etc/apt/apt-mirrors.txt 2>/dev/null
+          ls -la --time-style=full-iso /var/lib/apt/lists/ | head -60
+          du -sh /var/lib/apt/lists
+          apt-config dump | grep -iE "Pipeline|No-Cache|Languages|PDiffs|DEP-11|IndexTargets|Retries|Timeout|proxy" | head -30
+          ls -la --time-style=full-iso /var/cache/apt/*.bin 2>/dev/null
+      - name: Time apt-get update (as benchmark)
+        run: |
+          s=$(date +%s.%N); sudo apt-get update -qq; e=$(date +%s.%N); echo "update1 $(echo "$e - $s" | bc)"
+          ls /var/lib/apt/lists/ | head -60; du -sh /var/lib/apt/lists
+          s=$(date +%s.%N); sudo apt-get update -qq; e=$(date +%s.%N); echo "update2 $(echo "$e - $s" | bc)"
+      - name: Verbose update
+        run: |
+          sudo apt-get update 2>&1 | tail -40
