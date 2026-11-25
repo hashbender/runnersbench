@@ -1,23 +1,37 @@
 name: apt probe
 on: workflow_dispatch
 jobs:
-  probe:
+  lock:
+    runs-on: luxor-ubuntu-medium-4c-8g
+    strategy:
+      fail-fast: false
+      matrix:
+        case: [update-default, install-default, update-timeout, install-timeout]
+    steps:
+      - name: Background refresh then immediate apt use
+        run: |
+          set -u
+          apt-get --version | head -1
+          if [[ "${{ matrix.case }}" == *-timeout ]]; then
+            echo 'DPkg::Lock::Timeout "120";' | sudo tee /etc/apt/apt.conf.d/99-lock-timeout >/dev/null
+          fi
+          sudo systemd-run --quiet --unit=bg-apt-refresh --no-block --property=Nice=10 apt-get update -qq
+          sleep 0.3
+          s=$(date +%s%N)
+          if [[ "${{ matrix.case }}" == update-* ]]; then
+            sudo apt-get update -qq; rc=$?
+          else
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq fio; rc=$?
+          fi
+          echo "RESULT case=${{ matrix.case }} rc=$rc ms=$(( ($(date +%s%N)-s)/1000000 ))"
+          systemctl status bg-apt-refresh --no-pager 2>&1 | head -5 || true
+          journalctl -u bg-apt-refresh --no-pager 2>/dev/null | tail -5 || true
+  timing:
     runs-on: luxor-ubuntu-medium-4c-8g
     steps:
-      - name: Apt config
+      - name: Refresh at start, measure
         run: |
-          cat /etc/apt/sources.list.d/microsoft-prod.list || true
-          apt-config dump | grep -iE "Pipeline|No-Cache|Languages|PDiffs|DEP-11|Retries|Timeout|Proxy" || true
-          ls -la --time-style=full-iso /var/cache/apt/ || true
-      - name: Time apt-get update variants
-        run: |
-          t() { local s=$(date +%s%N); "$@" >/tmp/out 2>&1; local rc=$?; echo "$(( ($(date +%s%N)-s)/1000000 )) ms rc=$rc : $*"; }
-          sudo cp -a /var/lib/apt/lists /tmp/lists.orig
-          t sudo apt-get update -qq
-          sudo grep -E "^(Get|Hit|Ign|Err)" /tmp/out | head -5 || true
-          sudo apt-get update -o Debug::Acquire::http=false 2>&1 | grep -E "^(Get|Hit|Ign|Err|Fetched)" | sed 's/\[.*//' | head -60
-          echo "== update 2 (fresh lists)"; t sudo apt-get update -qq
-          echo "== without microsoft repo"; sudo mv /etc/apt/sources.list.d/microsoft-prod.list /tmp/; t sudo apt-get update -qq
-          echo "== restore original lists, without microsoft"; sudo rm -rf /var/lib/apt/lists && sudo cp -a /tmp/lists.orig /var/lib/apt/lists; t sudo apt-get update -qq
-          echo "== restore original lists, with microsoft"; sudo mv /tmp/microsoft-prod.list /etc/apt/sources.list.d/; sudo rm -rf /var/lib/apt/lists && sudo cp -a /tmp/lists.orig /var/lib/apt/lists; t sudo apt-get update -qq
-          echo "== install"; t sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sysbench fio build-essential
+          s=$(date +%s%N)
+          sudo systemd-run --quiet --unit=bg-apt-refresh --wait --property=Nice=10 apt-get update -qq
+          echo "RESULT bg refresh ms=$(( ($(date +%s%N)-s)/1000000 ))"
+          s=$(date +%s%N); sudo apt-get update -qq; echo "RESULT user update after refresh ms=$(( ($(date +%s%N)-s)/1000000 ))"
