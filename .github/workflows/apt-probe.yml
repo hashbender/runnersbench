@@ -4,20 +4,20 @@ jobs:
   probe:
     runs-on: luxor-ubuntu-medium-4c-8g
     steps:
-      - name: Inspect apt state
+      - name: Apt config
         run: |
-          set -x
-          cat /etc/os-release | head -2
-          ls /etc/apt/sources.list.d/; cat /etc/apt/sources.list.d/*.sources; cat /etc/apt/sources.list 2>/dev/null; cat /etc/apt/apt-mirrors.txt 2>/dev/null
-          ls -la --time-style=full-iso /var/lib/apt/lists/ | head -60
-          du -sh /var/lib/apt/lists
-          apt-config dump | grep -iE "Pipeline|No-Cache|Languages|PDiffs|DEP-11|IndexTargets|Retries|Timeout|proxy" | head -30
-          ls -la --time-style=full-iso /var/cache/apt/*.bin 2>/dev/null
-      - name: Time apt-get update (as benchmark)
+          cat /etc/apt/sources.list.d/microsoft-prod.list || true
+          apt-config dump | grep -iE "Pipeline|No-Cache|Languages|PDiffs|DEP-11|Retries|Timeout|Proxy" || true
+          ls -la --time-style=full-iso /var/cache/apt/ || true
+      - name: Time apt-get update variants
         run: |
-          s=$(date +%s.%N); sudo apt-get update -qq; e=$(date +%s.%N); echo "update1 $(echo "$e - $s" | bc)"
-          ls /var/lib/apt/lists/ | head -60; du -sh /var/lib/apt/lists
-          s=$(date +%s.%N); sudo apt-get update -qq; e=$(date +%s.%N); echo "update2 $(echo "$e - $s" | bc)"
-      - name: Verbose update
-        run: |
-          sudo apt-get update 2>&1 | tail -40
+          t() { local s=$(date +%s%N); "$@" >/tmp/out 2>&1; local rc=$?; echo "$(( ($(date +%s%N)-s)/1000000 )) ms rc=$rc : $*"; }
+          sudo cp -a /var/lib/apt/lists /tmp/lists.orig
+          t sudo apt-get update -qq
+          sudo grep -E "^(Get|Hit|Ign|Err)" /tmp/out | head -5 || true
+          sudo apt-get update -o Debug::Acquire::http=false 2>&1 | grep -E "^(Get|Hit|Ign|Err|Fetched)" | sed 's/\[.*//' | head -60
+          echo "== update 2 (fresh lists)"; t sudo apt-get update -qq
+          echo "== without microsoft repo"; sudo mv /etc/apt/sources.list.d/microsoft-prod.list /tmp/; t sudo apt-get update -qq
+          echo "== restore original lists, without microsoft"; sudo rm -rf /var/lib/apt/lists && sudo cp -a /tmp/lists.orig /var/lib/apt/lists; t sudo apt-get update -qq
+          echo "== restore original lists, with microsoft"; sudo mv /tmp/microsoft-prod.list /etc/apt/sources.list.d/; sudo rm -rf /var/lib/apt/lists && sudo cp -a /tmp/lists.orig /var/lib/apt/lists; t sudo apt-get update -qq
+          echo "== install"; t sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sysbench fio build-essential
