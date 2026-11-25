@@ -6,8 +6,10 @@
       "label": "ubuntu-24.04",
       "arch": "x64",
       "price_per_minute": 0.012,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "Baseline. 4 vCPU / 16 GB on public repos, where it's free; priced at GitHub's 4-core larger runner rate, the paid equivalent.",
       "pricing_source": "https://docs.github.com/en/billing/reference/actions-runner-pricing"
     },
@@ -17,7 +19,9 @@
       "label": "luxor-ubuntu-medium-4c-8g",
       "arch": "x64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 1},
+      "billing": {
+        "increment_seconds": 1
+      },
       "enabled": true,
       "notes": "luxor.ai (formerly Tenki). $0.002 per vCPU-minute.",
       "pricing_source": "https://luxor.ai/docs/pricing"
@@ -28,8 +32,10 @@
       "label": "avrea-ubuntu-24.04-4-vcpu",
       "arch": "x64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "Pinned to Ubuntu 24.04 to match GitHub. Billed per second.",
       "pricing_source": "https://avrea.com/pricing"
     },
@@ -39,8 +45,10 @@
       "label": "depot-ubuntu-24.04-4",
       "arch": "x64",
       "price_per_minute": 0.012,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "pricing_source": "https://depot.dev/docs/github-actions/runner-types"
     },
     {
@@ -49,8 +57,10 @@
       "label": "warp-ubuntu-2404-x64-4x",
       "arch": "x64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "Pinned to Ubuntu 24.04 to match GitHub.",
       "pricing_source": "https://www.warpbuild.com/pricing"
     },
@@ -60,8 +70,10 @@
       "label": "checklane-4vcpu-ubuntu-2404",
       "arch": "x64",
       "price_per_minute": 0.004,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "Pinned to Ubuntu 24.04 to match GitHub; the bare label runs 26.04. $0.001 per vCPU-minute, billed per second.",
       "pricing_source": "https://checklane.sh/pricing"
     },
@@ -71,8 +83,10 @@
       "label": "groundbox-4vcpu",
       "arch": "x64",
       "price_per_minute": 0.006,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "groundbox.dev. Ubuntu 24.04, one Firecracker microVM per job. $0.0015 per vCPU-minute.",
       "pricing_source": "https://groundbox.dev/pricing"
     },
@@ -82,8 +96,10 @@
       "label": "blacksmith-4vcpu-ubuntu-2404",
       "arch": "x64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "pricing_source": "https://www.blacksmith.sh/pricing"
     },
     {
@@ -92,8 +108,12 @@
       "label": "nscloud-ubuntu-24.04-amd64-4x8",
       "arch": "x64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 60, "minimum_seconds": 60, "grace_seconds": 15},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60,
+        "minimum_seconds": 60,
+        "grace_seconds": 15
+      },
+      "enabled": false,
       "notes": "4x8 is Namespace's standard 4 vCPU shape. $0.002 per compute-unit minute (1 vCPU, 2 GB).",
       "pricing_source": "https://namespace.so/pricing"
     },
@@ -103,8 +123,10 @@
       "label": "celesto-large",
       "arch": "x64",
       "price_per_minute": 0.00133333,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "Large is Celesto's 4 vCPU / 16 GB size on Ubuntu 24.04. Billed per second of runtime, which also includes runner preparation and cleanup.",
       "pricing_source": "https://celesto.ai/docs/ci"
     },
@@ -114,7 +136,9 @@
       "label": "jog-4vcpu",
       "arch": "x64",
       "price_per_minute": 0.0024,
-      "billing": {"increment_seconds": 1},
+      "billing": {
+        "increment_seconds": 1
+      },
       "enabled": false,
       "notes": "usejog.com. Ubuntu 24.04, billed per second. jog-max is a faster tier at twice the price.",
       "pricing_source": "https://usejog.com/#pricing"
@@ -125,7 +149,9 @@
       "label": "runjob-ubuntu-24.04",
       "arch": "x64",
       "price_per_minute": null,
-      "billing": {"increment_seconds": 1},
+      "billing": {
+        "increment_seconds": 1
+      },
       "enabled": false,
       "notes": "runjob.eu (Puzl Cloud). No fixed sizes: free-plan jobs get up to 12 vCPU and 32 GB on shared cores. Billed per second for load, not time: EUR 0.00002 per vCPU-second used plus EUR 0.000001 per GB-second, so there's no per-minute price.",
       "pricing_source": "https://runjob.eu/#Pricing"
@@ -136,8 +162,10 @@
       "label": "boat",
       "arch": "x64",
       "price_per_minute": 0.0006,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "boat.dev. Ubuntu 24.04, one fresh VM per job, billed per second. Needs a plan from $20/month; the plan amount comes back as VM time. Starts above the plan's included count cost $0.03-0.07 each.",
       "pricing_source": "https://docs.boat.dev/pricing"
     },
@@ -147,8 +175,10 @@
       "label": "ubuntu-24.04-arm",
       "arch": "arm64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "4 vCPU / 16 GB on public repos, where it is free; priced at the 4-core arm64 larger runner rate.",
       "pricing_source": "https://docs.github.com/en/billing/reference/actions-runner-pricing"
     },
@@ -158,8 +188,10 @@
       "label": "avrea-ubuntu-24.04-arm-4-vcpu",
       "arch": "arm64",
       "price_per_minute": 0.024,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "Runs on Apple M5 Max hardware. Pinned to Ubuntu 24.04.",
       "pricing_source": "https://avrea.com/pricing"
     },
@@ -169,8 +201,10 @@
       "label": "blacksmith-4vcpu-ubuntu-2404-arm",
       "arch": "arm64",
       "price_per_minute": 0.005,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "pricing_source": "https://www.blacksmith.sh/pricing"
     },
     {
@@ -179,8 +213,10 @@
       "label": "depot-ubuntu-24.04-arm-4",
       "arch": "arm64",
       "price_per_minute": 0.012,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "pricing_source": "https://depot.dev/docs/github-actions/runner-types"
     },
     {
@@ -189,7 +225,11 @@
       "label": "namespace-profile-default-arm64",
       "arch": "arm64",
       "price_per_minute": 0.008,
-      "billing": {"increment_seconds": 60, "minimum_seconds": 60, "grace_seconds": 15},
+      "billing": {
+        "increment_seconds": 60,
+        "minimum_seconds": 60,
+        "grace_seconds": 15
+      },
       "enabled": false,
       "notes": "Uses the default-arm64 runner profile configured in Namespace; its shape is set there.",
       "pricing_source": "https://namespace.so/pricing"
@@ -200,8 +240,10 @@
       "label": "warp-ubuntu-2404-arm64-4x",
       "arch": "arm64",
       "price_per_minute": 0.006,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "pricing_source": "https://www.warpbuild.com/pricing"
     },
     {
@@ -210,8 +252,10 @@
       "label": "buildkite-linux-amd64-4x16",
       "arch": "x64",
       "price_per_minute": 0.016,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "Buildkite hosted agent (Medium). Runs .buildkite/pipeline.yml, started by the bench-buildkite job. Needs a paid or trial plan.",
       "pricing_source": "https://buildkite.com/platform/pipelines/hosting-options/linux-hosted-agents/",
       "buildkite": {
@@ -226,7 +270,9 @@
       "label": "buildkite-linux-arm64-4x16",
       "arch": "arm64",
       "price_per_minute": null,
-      "billing": {"increment_seconds": 1},
+      "billing": {
+        "increment_seconds": 1
+      },
       "enabled": false,
       "notes": "Buildkite hosted agent (Medium ARM64). Needs a hosted queue with the LINUX_ARM64_4X16 shape and key linux-arm-medium.",
       "pricing_source": "https://buildkite.com/platform/pipelines/hosting-options/linux-hosted-agents/",
@@ -243,8 +289,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.062,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "Standard M1 runner, free on public repos; priced at GitHub's macOS rate. The 5-core M2 Pro macos-26-xlarge is $0.102.",
       "pricing_source": "https://docs.github.com/en/billing/reference/actions-runner-pricing"
     },
@@ -255,7 +303,9 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.08,
-      "billing": {"increment_seconds": 1},
+      "billing": {
+        "increment_seconds": 1
+      },
       "enabled": true,
       "notes": "M4 Pro. $0.020 per vCPU-minute.",
       "pricing_source": "https://luxor.ai/docs/pricing"
@@ -267,8 +317,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.08,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "M5 Max. Smallest macOS size.",
       "pricing_source": "https://avrea.com/pricing"
     },
@@ -279,8 +331,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.08,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "M4 host with 10 cores; the job gets 9.",
       "pricing_source": "https://depot.dev/docs/github-actions/runner-types"
     },
@@ -291,8 +345,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.08,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "Smallest macOS size.",
       "pricing_source": "https://docs.warpbuild.com/ci/cloud-runners"
     },
@@ -303,8 +359,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.05,
-      "billing": {"increment_seconds": 1},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": false,
       "notes": "M6, macOS 26. Groundbox's only macOS size.",
       "pricing_source": "https://groundbox.dev/macos-ci"
     },
@@ -315,8 +373,10 @@
       "arch": "arm64",
       "os": "macos",
       "price_per_minute": 0.08,
-      "billing": {"increment_seconds": 60},
-      "enabled": true,
+      "billing": {
+        "increment_seconds": 60
+      },
+      "enabled": false,
       "notes": "M4. Smallest macOS size.",
       "pricing_source": "https://www.blacksmith.sh/pricing"
     }
