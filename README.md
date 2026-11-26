@@ -22,11 +22,12 @@ spread.
 | ![](https://img.shields.io/badge/-%20-3ca951?style=flat-square) | Celesto | ✓ |  |  |
 | ![](https://img.shields.io/badge/-%20-ff8ab7?style=flat-square) | Checklane | ✓ |  |  |
 | ![](https://img.shields.io/badge/-%20-a463f2?style=flat-square) | Depot | ✓ | ✓ | ✓ |
-| ![](https://img.shields.io/badge/-%20-97bbf5?style=flat-square) | GitHub | ✓ | ✓ | ✓ |
-| ![](https://img.shields.io/badge/-%20-9c6b4e?style=flat-square) | Groundbox | ✓ |  | ✓ |
-| ![](https://img.shields.io/badge/-%20-9498a0?style=flat-square) | Luxor | ✓ |  | ✓ |
-| ![](https://img.shields.io/badge/-%20-2f4b7c?style=flat-square) | Namespace | ✓ |  |  |
-| ![](https://img.shields.io/badge/-%20-d6336c?style=flat-square) | WarpBuild | ✓ | ✓ | ✓ |
+| ![](https://img.shields.io/badge/-%20-97bbf5?style=flat-square) | FlameWill |  | ✓ |  |
+| ![](https://img.shields.io/badge/-%20-9c6b4e?style=flat-square) | GitHub | ✓ | ✓ | ✓ |
+| ![](https://img.shields.io/badge/-%20-9498a0?style=flat-square) | Groundbox | ✓ |  | ✓ |
+| ![](https://img.shields.io/badge/-%20-2f4b7c?style=flat-square) | Luxor | ✓ |  | ✓ |
+| ![](https://img.shields.io/badge/-%20-d6336c?style=flat-square) | Namespace | ✓ |  |  |
+| ![](https://img.shields.io/badge/-%20-8c8c1a?style=flat-square) | WarpBuild | ✓ | ✓ | ✓ |
 <!-- providers:end -->
 
 Linux runners are 4 vCPU on Ubuntu 24.04. Macs don't share a common size, so
