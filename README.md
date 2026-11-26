@@ -27,7 +27,8 @@ spread.
 | ![](https://img.shields.io/badge/-%20-9498a0?style=flat-square) | Groundbox | ✓ |  | ✓ |
 | ![](https://img.shields.io/badge/-%20-2f4b7c?style=flat-square) | Luxor | ✓ |  | ✓ |
 | ![](https://img.shields.io/badge/-%20-d6336c?style=flat-square) | Namespace | ✓ |  |  |
-| ![](https://img.shields.io/badge/-%20-8c8c1a?style=flat-square) | WarpBuild | ✓ | ✓ | ✓ |
+| ![](https://img.shields.io/badge/-%20-8c8c1a?style=flat-square) | Ubicloud | ✓ | ✓ |  |
+| ![](https://img.shields.io/badge/-%20-00a3a3?style=flat-square) | WarpBuild | ✓ | ✓ | ✓ |
 <!-- providers:end -->
 
 Linux runners are 4 vCPU on Ubuntu 24.04. Macs don't share a common size, so
