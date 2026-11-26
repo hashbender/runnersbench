@@ -61,7 +61,13 @@
   <main class="wrap">
     <section>
       <h2>Benchmarks</h2>
-      <p class="caption" id="benchmarks-caption"></p>
+      <div class="table-tools">
+        <p class="caption" id="benchmarks-caption"></p>
+        <span class="heat-controls">
+          <span class="heat-legend" id="heat-legend" hidden><span>best</span><span class="heat-scale" aria-hidden="true"></span><span>¼ or worse</span></span>
+          <label class="toggle"><input type="checkbox" id="heat-toggle"> Heat map</label>
+        </span>
+      </div>
       <div class="scroll bleed"><table id="benchmarks"></table></div>
       <p class="caption pricing-notes" hidden></p>
     </section>
