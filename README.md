@@ -11,7 +11,7 @@
   <a href="https://go.polylane.com/runnersbench">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="site/polylane.svg">
-      <img src="site/polylane-light.svg" alt="Polylane" height="36">
+      <img src="site/polylane-green.svg" alt="Polylane" height="36">
     </picture>
   </a>
 </p>
