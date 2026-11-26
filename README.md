@@ -63,6 +63,7 @@ merges the results, adds queue times, rebuilds the [site](site/) from every
 stored result and refreshes the provider table above.
 
 Run **Benchmark** from the Actions tab with `providers` (e.g. `depot,luxor`),
+`platforms` (e.g. `x64,arm64`),
 `repetitions` (default 3) and `force` (re-run runners that have results).
 
 - **Bump [`bench/VERSION`](bench/VERSION)** when a change makes new numbers

@@ -7,6 +7,10 @@ on:
         description: Comma-separated providers to run, e.g. "github,depot". Leave blank for every enabled runner.
         required: false
         default: ""
+      platforms:
+        description: Comma-separated platforms to run (x64, arm64, macos). Leave blank for all.
+        required: false
+        default: ""
       repetitions:
         description: Number of times to run each runner
         required: false
@@ -38,6 +42,7 @@ jobs:
       - id: matrix
         env:
           PROVIDERS: ${{ inputs.providers }}
+          PLATFORMS: ${{ inputs.platforms }}
           REPETITIONS: ${{ inputs.repetitions || '3' }}
           FORCE: ${{ inputs.force }}
         run: |
@@ -46,12 +51,14 @@ jobs:
           if [ "$FORCE" != true ] && git fetch -q --depth 1 origin gh-pages; then
             stored=$(git ls-tree --name-only FETCH_HEAD "results/v$version/" | sed 's#.*/##; s#\.json$##' | jq -R . | jq -sc .)
           fi
-          matrix=$(jq -c --arg providers "$PROVIDERS" --argjson reps "$REPETITIONS" --argjson stored "$stored" '
+          matrix=$(jq -c --arg providers "$PROVIDERS" --arg platforms "$PLATFORMS" --argjson reps "$REPETITIONS" --argjson stored "$stored" '
             ($providers | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(. != ""))) as $wanted
+            | ($platforms | split(",") | map(gsub("^\\s+|\\s+$"; "")) | map(select(. != ""))) as $wanted_platforms
             | {include: [
                 .runners[]
                 | select(.enabled)
                 | select(($wanted | length) == 0 or (.provider | IN($wanted[])))
+                | select(($wanted_platforms | length) == 0 or ((if .os == "macos" then "macos" else .arch end) | IN($wanted_platforms[])))
                 | select(.label | IN($stored[]) | not)
                 | . as $runner
                 | range(1; $reps + 1)
