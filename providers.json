@@ -221,6 +221,28 @@
       "pricing_source": "https://flamewill.com/pricing/"
     },
     {
+      "provider": "ubicloud",
+      "name": "Ubicloud",
+      "label": "ubicloud-standard-4",
+      "arch": "x64",
+      "price_per_minute": 0.004,
+      "billing": {"increment_seconds": 60},
+      "enabled": true,
+      "notes": "4 vCPU / 16 GB, Ubuntu 24.04. Premium runners (AMD Ryzen 9 7950X3D, $0.004/min) are on by default; jobs fall back to standard runners ($0.0025/min) when the premium fleet is busy. Billed per minute.",
+      "pricing_source": "https://www.ubicloud.com/docs/about/pricing"
+    },
+    {
+      "provider": "ubicloud",
+      "name": "Ubicloud",
+      "label": "ubicloud-standard-4-arm",
+      "arch": "arm64",
+      "price_per_minute": 0.0025,
+      "billing": {"increment_seconds": 60},
+      "enabled": true,
+      "notes": "4 vCPU / 12 GB on Ampere Altra, Ubuntu 24.04, one physical core per vCPU. Billed per minute.",
+      "pricing_source": "https://www.ubicloud.com/docs/about/pricing"
+    },
+    {
       "provider": "buildkite",
       "name": "Buildkite",
       "label": "buildkite-linux-amd64-4x16",
