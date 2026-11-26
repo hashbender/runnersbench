@@ -6,6 +6,16 @@
   <img src="https://img.shields.io/badge/runs-weekly-677286?style=flat-square" alt="Runs weekly">
 </p>
 
+<p align="center">
+  Sponsored by<br>
+  <a href="https://go.polylane.com/runnersbench">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="site/polylane.svg">
+      <img src="site/polylane-light.svg" alt="Polylane" height="36">
+    </picture>
+  </a>
+</p>
+
 Every runner runs the same script at the same moment, three times, and
 [runnersbench.com](https://runnersbench.com/) publishes the median and the
 spread.
