@@ -73,7 +73,8 @@ Run **Benchmark** from the Actions tab with `providers` (e.g. `depot,luxor`),
 
 ## Adding a provider
 
-Install its GitHub App on this repo's account, then add an entry to
+Missing a provider? [Suggest it](https://github.com/lockyer-labs/runnersbench/issues/new?template=provider.yml). To add one yourself,
+install its GitHub App on this repo's account, then add an entry to
 `providers.json`:
 
 ```json

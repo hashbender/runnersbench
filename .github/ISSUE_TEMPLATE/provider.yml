@@ -1,0 +1,46 @@
+name: Suggest a provider
+description: Ask for a GitHub Actions runner provider to be benchmarked
+title: "Add "
+labels: [provider]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Provider
+      placeholder: Example CI
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website
+      placeholder: https://example.com
+    validations:
+      required: true
+  - type: textarea
+    id: labels
+    attributes:
+      label: Runner labels
+      description: The `runs-on` label for each 4 vCPU Linux runner (x64, arm64) and the smallest Apple Silicon macOS runner you offer, with links to the docs.
+      placeholder: |
+        x64: example-4vcpu-ubuntu-2404
+        arm64: example-4vcpu-ubuntu-2404-arm
+    validations:
+      required: true
+  - type: textarea
+    id: pricing
+    attributes:
+      label: Pricing
+      description: Per-minute price for each runner, how jobs are rounded (per second or per minute), and any plan, seat or per-job fees. Link the pricing page.
+    validations:
+      required: true
+  - type: checkboxes
+    id: affiliation
+    attributes:
+      label: Are you from this provider?
+      options:
+        - label: Yes, and we can help set up access (a GitHub App install or account for lockyer-labs)
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
