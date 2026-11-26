@@ -145,12 +145,15 @@ def system_info(workdir):
         os_name = f"macOS {try_sh(['sw_vers', '-productVersion'])}"
         # kern.hv_vmm_present is 1 inside a Virtualization.framework VM.
         virtualization = "apple" if sysctl("kern.hv_vmm_present") == "1" else "none"
+        layers = {"vm": virtualization, "container": None}
         dmi = {"product_name": sysctl("hw.model")}
     else:
         model, vendor = lscpu.get("Model name") or cpuinfo_field("model name"), lscpu.get("Vendor ID")
         mem_bytes = int(mem_kb.group(1)) * 1024 if mem_kb else None
         os_name = pretty_name.group(1) if pretty_name else None
         virtualization = try_sh("systemd-detect-virt")
+        # Plain systemd-detect-virt reports only the innermost layer, and calls unknown containers "docker".
+        layers = {"vm": try_sh(["systemd-detect-virt", "--vm"]), "container": try_sh(["systemd-detect-virt", "--container"])}
         dmi = {f: read(f"/sys/class/dmi/id/{f}") or try_sh(f"sudo -n cat /sys/class/dmi/id/{f}") for f in DMI_FIELDS}
 
     return {
@@ -187,6 +190,7 @@ def system_info(workdir):
             "image_version": os.environ.get("ImageVersion"),
         },
         "virtualization": virtualization,
+        "virtualization_layers": layers,
         "dmi": dmi,
         "network": ip_info(),
         "runner": {

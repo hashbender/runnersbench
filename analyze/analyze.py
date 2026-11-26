@@ -105,6 +105,29 @@ def billing_label(billing):
     return ", ".join(parts)
 
 
+CONTAINERS = {"docker", "podman", "lxc", "lxc-libvirt", "systemd-nspawn", "rkt", "wsl", "proot", "pouch",
+              "container-other"}
+
+
+def virtualization(system):
+    """The VM layer, plus "+ container" when the job also runs in a container.
+
+    systemd-detect-virt reports a container whenever it finds markers like /.dockerenv, which VM images built
+    from Docker images keep. So a container only counts when the root filesystem is an overlay.
+    """
+    raw = system.get("virtualization")
+    layers = system.get("virtualization_layers")
+    if layers:
+        vm, container = layers.get("vm"), layers.get("container")
+    elif raw in CONTAINERS:
+        vm, container = (get(system, "cpu", "hypervisor") or "").lower() or None, raw
+    else:
+        vm, container = raw, None
+    if container and (get(system, "disk", "mount") or "").startswith("overlay"):
+        return f"{vm} + container" if vm else "container"
+    return vm or raw
+
+
 def cost_per_build(r):
     price, seconds = get(r, "spec", "price_per_minute"), get(r, "benchmarks", "compile_redis", "seconds")
     if price is None or seconds is None:
@@ -182,7 +205,7 @@ def summarise(results):
             "vcpus": get(system, "cpu", "available_cpus"),
             "memory_gib": round(mem / 2**30, 1) if mem else None,
             "disk_gb": round(disk / 1e9) if disk else None,
-            "virtualization": system.get("virtualization"),
+            "virtualization": virtualization(system),
             "location": ", ".join(filter(None, [net.get("city"), net.get("country")])) or None,
             "network": net.get("org"),
             "medians": medians,
