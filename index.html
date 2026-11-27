@@ -52,7 +52,7 @@
     "name": "Daniel Lockyer",
     "url": "https://x.com/daniellockyer"
    },
-   "dateModified": "2026-11-25T18:14:47.027012+00:00",
+   "dateModified": "2026-11-27T21:09:57.222083+00:00",
    "isAccessibleForFree": true,
    "sameAs": "https://github.com/lockyer-labs/runnersbench",
    "keywords": [
@@ -104,7 +104,7 @@
      "name": "Which GitHub Actions runner is the fastest?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 19.9 s. Build time is the median of three runs of make -j on the Redis source."
+      "text": "On Linux x64, Luxor built Redis fastest, in 23.5 s. On macOS, Luxor built Redis fastest, in 20.0 s. Build time is the median of three runs of make -j on the Redis source."
      }
     },
     {
@@ -136,7 +136,7 @@
      "name": "How often are the results updated?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "The benchmark runs weekly on GitHub Actions and the code is open source. These results were updated on 25 November 2026, covering 1 providers."
+      "text": "The benchmark runs weekly on GitHub Actions and the code is open source. These results were updated on 27 November 2026, covering 1 providers."
      }
     }
    ]
@@ -147,8 +147,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=45672485111">
-  <script src="app.js?v=45672485111" defer></script>
+  <link rel="stylesheet" href="style.css?v=46068090924">
+  <script src="app.js?v=46068090924" defer></script>
 </head>
 <body>
   <header class="hero">
@@ -188,11 +188,11 @@
     <section id="questions">
       <h2>Questions</h2>
       <div class="faq">
-        <div><h3>Which GitHub Actions runner is the fastest?</h3><p>On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 19.9 s. Build time is the median of three runs of make -j on the Redis source.</p></div>
+        <div><h3>Which GitHub Actions runner is the fastest?</h3><p>On Linux x64, Luxor built Redis fastest, in 23.5 s. On macOS, Luxor built Redis fastest, in 20.0 s. Build time is the median of three runs of make -j on the Redis source.</p></div>
         <div><h3>Which GitHub Actions runner is the cheapest?</h3><p>On Linux x64, Luxor was cheapest at $0.0032 per Redis build, against $0.0032 for Luxor. On macOS, Luxor was cheapest at $0.0267 per Redis build, against $0.0267 for Luxor. Costs use each provider&#x27;s list price and how it rounds a job&#x27;s duration.</p></div>
         <div><h3>Which runner providers are compared?</h3><p>Linux x64: Luxor. macOS: Luxor. Linux runners are each provider&#x27;s 4 vCPU size on Ubuntu 24.04; Macs are each provider&#x27;s smallest Apple Silicon size on macOS 26.</p></div>
         <div><h3>How are the runners benchmarked?</h3><p>Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, fio sequential and 4k random disk tests, a download from Cloudflare, package installs, a 1 GB actions/cache save and restore, and a Redis build. Queue time comes from the GitHub API. The site shows each metric&#x27;s median and the spread across runs.</p></div>
-        <div><h3>How often are the results updated?</h3><p>The benchmark runs weekly on GitHub Actions and the code is open source. These results were updated on 25 November 2026, covering 1 providers.</p></div>
+        <div><h3>How often are the results updated?</h3><p>The benchmark runs weekly on GitHub Actions and the code is open source. These results were updated on 27 November 2026, covering 1 providers.</p></div>
       </div>
     </section>
     <section id="errors-section" hidden>

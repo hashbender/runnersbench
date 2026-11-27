@@ -19,12 +19,12 @@
     },
     "github": {
       "repository": "hashbender/runnersbench",
-      "run_id": "45672485111",
+      "run_id": "46068090924",
       "run_attempt": "1",
-      "sha": "0d6aced18b85116a89dfb0239fa4f593ad83dfeb"
+      "sha": "19c8af90661128450918b81dbaa512059ae9a5fe"
     },
-    "started_at": "2026-11-25T18:12:17.171839+00:00",
-    "finished_at": "2026-11-25T18:14:17.220899+00:00",
+    "started_at": "2026-11-27T21:07:41.055744+00:00",
+    "finished_at": "2026-11-27T21:09:36.712672+00:00",
     "system": {
       "cpu": {
         "model": "Apple M4 Pro (Virtual)",
@@ -48,7 +48,7 @@
       "disk": {
         "workdir": "/Users/runner/actions-runner/_work/_temp",
         "total_bytes": 449475674112,
-        "free_bytes": 173751975936,
+        "free_bytes": 173749780480,
         "mount": null,
         "devices": null
       },
@@ -70,7 +70,7 @@
         "org": "AS19538 Luxor"
       },
       "runner": {
-        "name": "tenki-sandbox-829c62ee-e902-4713-91a7-68c602150633",
+        "name": "tenki-sandbox-e5877b79-d48d-48e4-9a49-a678a3a40561",
         "environment": "self-hosted"
       },
       "tools": {
@@ -78,13 +78,13 @@
         "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
         "python": "3.12.16"
       },
-      "wall_seconds": 4.300443250000001
+      "wall_seconds": 3.472378292000002
     },
     "benchmarks": {
       "apt_install": {
         "manager": "brew",
-        "seconds": 5.288130707999983,
-        "wall_seconds": 5.288134333000016
+        "seconds": 4.289906834000021,
+        "wall_seconds": 4.289910833000022
       },
       "cpu_single": {
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
@@ -93,66 +93,66 @@
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
       },
       "memory": {
-        "mib_per_second": 30251.3,
-        "wall_seconds": 16.454225082999983
+        "mib_per_second": 33722.38,
+        "wall_seconds": 15.971223667000004
       },
       "disk": {
         "seq_write": {
-          "mb_per_second": 3890.697111,
-          "iops": 3709.458108,
-          "p99_latency_us": 9764.864,
+          "mb_per_second": 14143.228877,
+          "iops": 13487.034198,
+          "p99_latency_us": 1368.064,
           "direct": true
         },
         "seq_read": {
-          "mb_per_second": 2764.287863,
-          "iops": 2635.230605,
-          "p99_latency_us": 10420.224,
+          "mb_per_second": 16142.031004,
+          "iops": 15393.240451,
+          "p99_latency_us": 1155.072,
           "direct": true
         },
         "rand_read": {
-          "mb_per_second": 63.959418,
-          "iops": 15614.225718,
-          "p99_latency_us": 2244.608,
+          "mb_per_second": 541.378922,
+          "iops": 132171.588561,
+          "p99_latency_us": 164.864,
           "direct": true
         },
         "rand_write": {
-          "mb_per_second": 26.430746,
-          "iops": 6451.819272,
-          "p99_latency_us": 6520.832,
+          "mb_per_second": 318.895211,
+          "iops": 77854.343044,
+          "p99_latency_us": 362.496,
           "direct": true
         },
-        "wall_seconds": 72.82917395800001
+        "wall_seconds": 72.949343
       },
       "download_cloudflare": {
-        "mb_per_second": 309.726016,
+        "mb_per_second": 293.556436,
         "bytes": 50000000,
-        "seconds": 0.161433,
-        "connect_seconds": 0.007617,
-        "ttfb_seconds": 0.040254,
-        "wall_seconds": 0.17131862500002626
+        "seconds": 0.170325,
+        "connect_seconds": 0.010285,
+        "ttfb_seconds": 0.04853,
+        "wall_seconds": 0.1997020410000232
       },
       "compile_redis": {
         "version": "8.10.3",
         "jobs": 4,
-        "seconds": 20.380618874999982,
+        "seconds": 18.244642,
         "github_download": {
-          "mb_per_second": 14.745192,
+          "mb_per_second": 20.560209,
           "bytes": 4780701,
-          "seconds": 0.324221,
-          "connect_seconds": 0.021202,
-          "ttfb_seconds": 0.263824
+          "seconds": 0.232522,
+          "connect_seconds": 0.024464,
+          "ttfb_seconds": 0.093767
         },
-        "wall_seconds": 21.003763125000035
+        "wall_seconds": 18.773113040999988
       },
       "cache": {
         "size_mb": 1024,
-        "save_seconds": 6.591067790985107,
-        "restore_seconds": 17.51368498802185
+        "save_seconds": 4.049163103103638,
+        "restore_seconds": 15.527979135513306
       }
     },
     "timing": {
-      "queue_seconds": 17.0,
-      "job_seconds": 167.0
+      "queue_seconds": 27.0,
+      "job_seconds": 156.0
     }
   },
   {
@@ -175,12 +175,12 @@
     },
     "github": {
       "repository": "hashbender/runnersbench",
-      "run_id": "45672485111",
+      "run_id": "46068090924",
       "run_attempt": "1",
-      "sha": "0d6aced18b85116a89dfb0239fa4f593ad83dfeb"
+      "sha": "19c8af90661128450918b81dbaa512059ae9a5fe"
     },
-    "started_at": "2026-11-25T18:12:23.934267+00:00",
-    "finished_at": "2026-11-25T18:14:19.482932+00:00",
+    "started_at": "2026-11-27T21:07:43.567855+00:00",
+    "finished_at": "2026-11-27T21:09:41.372537+00:00",
     "system": {
       "cpu": {
         "model": "Apple M4 Pro (Virtual)",
@@ -204,7 +204,7 @@
       "disk": {
         "workdir": "/Users/runner/actions-runner/_work/_temp",
         "total_bytes": 449475674112,
-        "free_bytes": 173787455488,
+        "free_bytes": 173775323136,
         "mount": null,
         "devices": null
       },
@@ -226,7 +226,7 @@
         "org": "AS19538 Luxor"
       },
       "runner": {
-        "name": "tenki-sandbox-b6d4bae3-2597-4c1d-b12b-ff784276be3c",
+        "name": "tenki-sandbox-e5cd2c45-9be0-4905-a996-7aa4525f7126",
         "environment": "self-hosted"
       },
       "tools": {
@@ -234,13 +234,13 @@
         "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
         "python": "3.12.16"
       },
-      "wall_seconds": 3.8128473329999792
+      "wall_seconds": 3.798309041999971
     },
     "benchmarks": {
       "apt_install": {
         "manager": "brew",
-        "seconds": 4.410787207999988,
-        "wall_seconds": 4.410790833000021
+        "seconds": 4.434962791999965,
+        "wall_seconds": 4.43496650000003
       },
       "cpu_single": {
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
@@ -249,66 +249,66 @@
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
       },
       "memory": {
-        "mib_per_second": 29985.99,
-        "wall_seconds": 15.827197207999973
+        "mib_per_second": 31672.83,
+        "wall_seconds": 15.7899855
       },
       "disk": {
         "seq_write": {
-          "mb_per_second": 1942.218577,
-          "iops": 1852.177387,
-          "p99_latency_us": 20316.16,
+          "mb_per_second": 10868.884128,
+          "iops": 10364.375708,
+          "p99_latency_us": 1744.896,
           "direct": true
         },
         "seq_read": {
-          "mb_per_second": 3079.322613,
-          "iops": 2935.670955,
-          "p99_latency_us": 9764.864,
+          "mb_per_second": 12143.587944,
+          "iops": 11580.027998,
+          "p99_latency_us": 1728.512,
           "direct": true
         },
         "rand_read": {
-          "mb_per_second": 62.639228,
-          "iops": 15291.780548,
-          "p99_latency_us": 2605.056,
+          "mb_per_second": 400.119484,
+          "iops": 97684.687687,
+          "p99_latency_us": 230.4,
           "direct": true
         },
         "rand_write": {
-          "mb_per_second": 26.636832,
-          "iops": 6502.133049,
-          "p99_latency_us": 6520.832,
+          "mb_per_second": 242.7308,
+          "iops": 59259.44937,
+          "p99_latency_us": 514.048,
           "direct": true
         },
-        "wall_seconds": 70.78192216600002
+        "wall_seconds": 72.91870679099998
       },
       "download_cloudflare": {
-        "mb_per_second": 277.850327,
+        "mb_per_second": 274.292736,
         "bytes": 50000000,
-        "seconds": 0.179953,
-        "connect_seconds": 0.008135,
-        "ttfb_seconds": 0.044097,
-        "wall_seconds": 0.21680720800003428
+        "seconds": 0.182287,
+        "connect_seconds": 0.006995,
+        "ttfb_seconds": 0.052292,
+        "wall_seconds": 0.2622850839999842
       },
       "compile_redis": {
         "version": "8.10.3",
         "jobs": 4,
-        "seconds": 19.936712957999987,
+        "seconds": 19.970696540999995,
         "github_download": {
-          "mb_per_second": 20.683408,
+          "mb_per_second": 14.393068,
           "bytes": 4780701,
-          "seconds": 0.231137,
-          "connect_seconds": 0.026521,
-          "ttfb_seconds": 0.102783
+          "seconds": 0.332153,
+          "connect_seconds": 0.023251,
+          "ttfb_seconds": 0.094852
         },
-        "wall_seconds": 20.497585291999997
+        "wall_seconds": 20.600796083000034
       },
       "cache": {
         "size_mb": 1024,
-        "save_seconds": 8.883397817611694,
-        "restore_seconds": 12.312822103500366
+        "save_seconds": 4.235864639282227,
+        "restore_seconds": 15.68726396560669
       }
     },
     "timing": {
       "queue_seconds": 28.0,
-      "job_seconds": 158.0
+      "job_seconds": 157.0
     }
   },
   {
@@ -331,12 +331,12 @@
     },
     "github": {
       "repository": "hashbender/runnersbench",
-      "run_id": "45672485111",
+      "run_id": "46068090924",
       "run_attempt": "1",
-      "sha": "0d6aced18b85116a89dfb0239fa4f593ad83dfeb"
+      "sha": "19c8af90661128450918b81dbaa512059ae9a5fe"
     },
-    "started_at": "2026-11-25T18:12:22.639429+00:00",
-    "finished_at": "2026-11-25T18:14:18.593782+00:00",
+    "started_at": "2026-11-27T21:07:39.367350+00:00",
+    "finished_at": "2026-11-27T21:09:38.796712+00:00",
     "system": {
       "cpu": {
         "model": "Apple M4 Pro (Virtual)",
@@ -360,7 +360,7 @@
       "disk": {
         "workdir": "/Users/runner/actions-runner/_work/_temp",
         "total_bytes": 449475674112,
-        "free_bytes": 173773979648,
+        "free_bytes": 173747720192,
         "mount": null,
         "devices": null
       },
@@ -382,7 +382,7 @@
         "org": "AS19538 Luxor"
       },
       "runner": {
-        "name": "tenki-sandbox-cfd0da75-eee8-4603-8883-8313893a1cba",
+        "name": "tenki-sandbox-e46ed6d7-6f61-444e-9db8-33b47171bcec",
         "environment": "self-hosted"
       },
       "tools": {
@@ -390,13 +390,13 @@
         "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
         "python": "3.12.16"
       },
-      "wall_seconds": 3.661169416000007
+      "wall_seconds": 4.1173312500000065
     },
     "benchmarks": {
       "apt_install": {
         "manager": "brew",
-        "seconds": 4.30018445799999,
-        "wall_seconds": 4.300188667000015
+        "seconds": 4.903361292,
+        "wall_seconds": 4.903365959000013
       },
       "cpu_single": {
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
@@ -405,66 +405,66 @@
         "skipped": "sysbench's CPU test doesn't do real work on macOS"
       },
       "memory": {
-        "mib_per_second": 32738.79,
-        "wall_seconds": 15.758553458000023
+        "mib_per_second": 31689.06,
+        "wall_seconds": 16.39068954200002
       },
       "disk": {
         "seq_write": {
-          "mb_per_second": 6184.228776,
-          "iops": 5896.740217,
-          "p99_latency_us": 7897.088,
+          "mb_per_second": 11464.435593,
+          "iops": 10932.337844,
+          "p99_latency_us": 1630.208,
           "direct": true
         },
         "seq_read": {
-          "mb_per_second": 4990.712952,
-          "iops": 4758.514964,
-          "p99_latency_us": 5472.256,
+          "mb_per_second": 12938.122187,
+          "iops": 12337.754966,
+          "p99_latency_us": 1564.672,
           "direct": true
         },
         "rand_read": {
-          "mb_per_second": 65.380635,
-          "iops": 15961.069262,
-          "p99_latency_us": 2277.376,
+          "mb_per_second": 393.773838,
+          "iops": 96135.457636,
+          "p99_latency_us": 230.4,
           "direct": true
         },
         "rand_write": {
-          "mb_per_second": 28.477914,
-          "iops": 6951.616128,
-          "p99_latency_us": 6324.224,
+          "mb_per_second": 242.278632,
+          "iops": 59149.05673,
+          "p99_latency_us": 514.048,
           "direct": true
         },
-        "wall_seconds": 73.00397808299999
+        "wall_seconds": 73.106644792
       },
       "download_cloudflare": {
-        "mb_per_second": 175.114174,
+        "mb_per_second": 165.108591,
         "bytes": 50000000,
-        "seconds": 0.285528,
-        "connect_seconds": 0.00704,
-        "ttfb_seconds": 0.042271,
-        "wall_seconds": 0.2950072079999586
+        "seconds": 0.302831,
+        "connect_seconds": 0.009904,
+        "ttfb_seconds": 0.060718,
+        "wall_seconds": 0.315466334000007
       },
       "compile_redis": {
         "version": "8.10.3",
         "jobs": 4,
-        "seconds": 18.485880208000026,
+        "seconds": 20.02219758399997,
         "github_download": {
-          "mb_per_second": 32.4311,
+          "mb_per_second": 28.697062,
           "bytes": 4780701,
-          "seconds": 0.147411,
-          "connect_seconds": 0.020435,
-          "ttfb_seconds": 0.093067
+          "seconds": 0.166592,
+          "connect_seconds": 0.020859,
+          "ttfb_seconds": 0.095857
         },
-        "wall_seconds": 18.93374262499998
+        "wall_seconds": 20.594909459000007
       },
       "cache": {
         "size_mb": 1024,
-        "save_seconds": 6.011591911315918,
-        "restore_seconds": 17.437088012695312
+        "save_seconds": 3.8023629188537598,
+        "restore_seconds": 14.7100350856781
       }
     },
     "timing": {
-      "queue_seconds": 26.0,
-      "job_seconds": 161.0
+      "queue_seconds": 28.0,
+      "job_seconds": 157.0
     }
   }
 ]
