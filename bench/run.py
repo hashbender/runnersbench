@@ -311,13 +311,17 @@ def bench_transfer(command, chunk):
     def stream():
         moved, requests = 0, 0
         while (i := take()) is not None:
-            try:
-                down = float(sh(command(i)))
-            except CommandError as e:
-                errors.append(str(e).splitlines()[0])
+            # Stop at the deadline even mid-request; curl exits 28 but still reports the bytes it got.
+            cmd = command(i)
+            cmd[1:1] = ["--max-time", f"{max(deadline - time.monotonic(), 0.5):.2f}"]
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.returncode not in (0, 28) or not proc.stdout.strip():
+                errors.append(f"curl exited {proc.returncode}: {proc.stderr.strip()[:200]}")
                 break
-            moved += down
+            moved += float(proc.stdout)
             requests += 1
+            if proc.returncode == 28:
+                break
         streams.append((moved, requests, time.monotonic()))
 
     threads = [threading.Thread(target=stream) for _ in range(NET_STREAMS)]
