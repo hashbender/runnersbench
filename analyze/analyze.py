@@ -144,6 +144,26 @@ COLORS = {
 }
 DEFAULT_COLOR = "#64748b"
 
+# For results recorded before run.py kept ipinfo's "loc". Keyed by the location shown on the site.
+CITY_COORDINATES = {
+    "Ashburn, US": (39.04, -77.49), "Boardman, US": (45.84, -119.70), "Chicago, US": (41.88, -87.63),
+    "Des Moines, US": (41.59, -93.62), "Falkenstein, DE": (50.48, 12.37), "Frankfurt am Main, DE": (50.11, 8.68),
+    "Gravelines, FR": (50.99, 2.13), "Helsinki, FI": (60.17, 24.94), "Las Vegas, US": (36.17, -115.14),
+    "London, GB": (51.51, -0.13), "Martinez, US": (38.02, -122.13), "Phoenix, US": (33.45, -112.07),
+    "Roubaix, FR": (50.69, 3.18), "San Jose, US": (37.34, -121.89), "Seattle, US": (47.61, -122.33),
+    "Stockholm, SE": (59.33, 18.07), "Strasbourg, FR": (48.57, 7.75), "Warrenton, US": (38.71, -77.80),
+}
+
+
+def coordinates(network, location):
+    try:
+        lat, lon = (float(x) for x in network["loc"].split(","))
+        return [lat, lon]
+    except (KeyError, AttributeError, ValueError):
+        known = CITY_COORDINATES.get(location)
+        return list(known) if known else None
+
+
 # (key, column header, extractor, higher_is_better)
 METRICS = [
     ("queue", "Queue (s)", lambda r: get(r, "timing", "queue_seconds"), False),
@@ -193,6 +213,7 @@ def summarise(results):
         mem = get(system, "memory", "total_bytes")
         disk = get(system, "disk", "total_bytes")
         net = system.get("network") or {}
+        location = ", ".join(filter(None, [net.get("city"), net.get("country")])) or None
         medians, ranges = {}, {}
         for key, _, extract, _ in METRICS:
             values = [v for v in map(extract, samples) if v is not None]
@@ -212,7 +233,8 @@ def summarise(results):
             "memory_gib": round(mem / 2**30, 1) if mem else None,
             "disk_gb": round(disk / 1e9) if disk else None,
             "virtualization": virtualization(system),
-            "location": ", ".join(filter(None, [net.get("city"), net.get("country")])) or None,
+            "location": location,
+            "coordinates": coordinates(net, location),
             "network": net.get("org"),
             "medians": medians,
             "ranges": ranges,

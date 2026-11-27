@@ -130,7 +130,7 @@ def ip_info():
             data = json.load(resp)
     except Exception as e:
         return {"error": str(e)}
-    return {k: data.get(k) for k in ("ip", "city", "region", "country", "org")}
+    return {k: data.get(k) for k in ("ip", "city", "region", "country", "loc", "org")}
 
 
 def system_info(workdir):
