@@ -337,6 +337,9 @@ def main():
         with open(args.json, "w") as f:
             json.dump(results, f, indent=2)
     summary = summarise(results)
+    if args.providers:
+        with open(args.providers) as f:
+            summary["compliance"] = json.load(f).get("compliance", {})
     if args.summary:
         with open(args.summary, "w") as f:
             json.dump(summary, f, indent=1)
