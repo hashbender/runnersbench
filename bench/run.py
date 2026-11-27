@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from datetime import datetime, timezone
@@ -25,8 +26,17 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "VERSION")) a
 DURATION = 15  # seconds per sysbench/fio test
 WARMUP = 5  # seconds of all-thread CPU load before the CPU tests, so clocks and caches settle
 REDIS_VERSION = "8.10.3"
-# Cloudflare rejects requests above roughly 50 MB.
-CLOUDFLARE_URL = "https://speed.cloudflare.com/__down?bytes=50000000"
+# 1 GB of random data on this repo's download-test release, fetched in byte ranges. Cloudflare's speed
+# test can't be used for downloads: it answers 429 for an hour after roughly 1.5 GB from one address.
+DOWNLOAD_URL = "https://github.com/lockyer-labs/runnersbench/releases/download/download-test/1g.bin"
+DOWNLOAD_CHUNK = 50_000_000
+# A single 50 MB request finishes in a fraction of a second on a fast link, which measures burst speed;
+# back-to-back requests over several connections reach sustained limits. Each test stops after
+# NET_SECONDS or NET_BYTES.
+NET_SECONDS = 10
+NET_BYTES = 1_000_000_000
+NET_STREAMS = 4
+FSYNC_SECONDS = 10
 REDIS_URL = f"https://github.com/redis/redis/archive/refs/tags/{REDIS_VERSION}.tar.gz"
 APT_PACKAGES = ["sysbench", "fio", "build-essential"]
 # macOS runners already have the Xcode command line tools, so only the benchmarks come from Homebrew.
@@ -284,6 +294,74 @@ def curl(url, dest="/dev/null"):
             "connect_seconds": connect, "ttfb_seconds": ttfb}
 
 
+def bench_transfer(command, chunk):
+    """Run command(i) for request i on NET_STREAMS connections until NET_SECONDS or NET_BYTES."""
+    start = time.monotonic()
+    deadline = start + NET_SECONDS
+    streams, errors = [], []
+    next_request = [0]
+    lock = threading.Lock()
+
+    def take():
+        with lock:
+            i = next_request[0]
+            next_request[0] += 1
+            return i if i < NET_BYTES // chunk and time.monotonic() < deadline else None
+
+    def stream():
+        moved, requests = 0, 0
+        while (i := take()) is not None:
+            try:
+                down = float(sh(command(i)))
+            except CommandError as e:
+                errors.append(str(e).splitlines()[0])
+                break
+            moved += down
+            requests += 1
+        streams.append((moved, requests, time.monotonic()))
+
+    threads = [threading.Thread(target=stream) for _ in range(NET_STREAMS)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    moved = sum(s[0] for s in streams)
+    if not moved:
+        raise CommandError(errors[0] if errors else "nothing transferred")
+    seconds = max(s[2] for s in streams) - start
+    return {"mb_per_second": moved / seconds / 1e6, "bytes": int(moved), "seconds": seconds,
+            "streams": NET_STREAMS, "requests": sum(s[1] for s in streams), "errors": errors}
+
+
+TRANSFER = ["curl", "-sS", "--fail", "-L", "-o", "/dev/null", "-w", "%{size_download}"]
+
+
+def bench_download():
+    return bench_transfer(
+        lambda i: [*TRANSFER, "-r", f"{i * DOWNLOAD_CHUNK}-{(i + 1) * DOWNLOAD_CHUNK - 1}", DOWNLOAD_URL], DOWNLOAD_CHUNK)
+
+
+def bench_fsync(workdir):
+    """4k writes, each followed by fsync, as databases and package managers do.
+
+    Very high rates mean the host acknowledges flushes without reaching stable storage, which is fine for
+    throwaway CI machines.
+    """
+    path = os.path.join(workdir, "fsync.dat")
+    try:
+        out = sh(["fio", "--name=fsync", f"--filename={path}", "--size=256M", "--rw=write", "--bs=4k",
+                  "--ioengine=sync", "--fsync=1", "--time_based", f"--runtime={FSYNC_SECONDS}",
+                  "--output-format=json"])
+    finally:
+        if os.path.exists(path):
+            os.remove(path)
+    job = json.loads(out[out.index("{"):])["jobs"][0]
+    sync = job.get("sync", {}).get("lat_ns", {})
+    p99 = sync.get("percentile", {}).get("99.000000")
+    return {"writes_per_second": job["write"]["iops"], "sync_mean_us": sync.get("mean", 0) / 1000 or None,
+            "sync_p99_us": p99 / 1000 if p99 else None}
+
+
 def bench_compile_redis(workdir):
     tarball = os.path.join(workdir, "redis.tar.gz")
     download = curl(REDIS_URL, tarball)
@@ -339,7 +417,12 @@ def main():
         benchmarks["cpu_multi"]["cpu_accounting"] = cpu_accounting(counters, cpu_counters())
     benchmarks["memory"] = run("sysbench memory", bench_sysbench_memory)
     benchmarks["disk"] = run("fio", bench_fio, args.workdir)
-    benchmarks["download_cloudflare"] = run("download from Cloudflare", curl, CLOUDFLARE_URL)
+    if MACOS:
+        # A plain fsync on macOS doesn't reach the disk (that needs F_FULLFSYNC), so it isn't comparable.
+        benchmarks["fsync"] = {"skipped": "fsync doesn't flush to disk on macOS"}
+    else:
+        benchmarks["fsync"] = run("fio fsync", bench_fsync, args.workdir)
+    benchmarks["download"] = run("download from GitHub", bench_download)
     benchmarks["compile_redis"] = run("compile redis", bench_compile_redis, args.workdir)
     if os.environ.get("GITHUB_ACTIONS") == "true":
         # Timed by bench/cache.py around the workflow's actions/cache steps.

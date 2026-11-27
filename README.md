@@ -52,8 +52,8 @@ each provider runs its smallest Apple Silicon machine on macOS 26.
 | **Package install** | `apt-get update` + `sysbench fio build-essential`; `brew install sysbench fio` on macOS |
 | **CPU** | `sysbench cpu`, 1 thread and all threads, after a 5 s warm-up (skipped on macOS, where Homebrew's sysbench is broken) |
 | **Memory** | `sysbench memory`, single thread |
-| **Disk** | `fio` sequential read/write (1M) and 4k random read/write IOPS |
-| **Network** | 50 MB from Cloudflare, Redis source from GitHub |
+| **Disk** | `fio` sequential read/write (1M), 4k random read/write IOPS, and 4k writes each followed by `fsync` (Linux only) |
+| **Network** | Download a 1 GB [release asset](https://github.com/lockyer-labs/runnersbench/releases/tag/download-test) from GitHub over 4 connections, for 10 s or the whole file, so sustained limits show rather than bursts |
 | **Cache** | Save and restore 1 GB of incompressible data with the stock `actions/cache`, so providers that speed it up show it |
 | **Redis build** | `make -j$(nproc)`, and its cost at list price with each provider's billing rounding |
 
