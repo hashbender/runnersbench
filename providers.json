@@ -90,6 +90,7 @@
       "arch": "x64",
       "price_per_minute": 0.006,
       "billing": {"increment_seconds": 1},
+      "docker_cache": "groundbox",
       "enabled": true,
       "notes": "groundbox.dev. Ubuntu 24.04, one Firecracker microVM per job. $0.0015 per vCPU-minute.",
       "pricing_source": "https://groundbox.dev/pricing"

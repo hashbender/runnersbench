@@ -177,6 +177,7 @@ jobs:
       DOCKER_CACHE_URL: ${{ matrix.docker_cache_url }}
     steps:
       - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
       # Each provider's own way of keeping Docker layers between jobs (docker_cache in providers.json);
       # the rest use the GitHub Actions cache, which most providers serve from their own storage.
       - name: Set up Docker Buildx
@@ -195,10 +196,11 @@ jobs:
         uses: flamewill/setup-docker-builder@v1
         with:
           cache-key: ${{ env.DOCKER_SCOPE }}
-      # Namespace runners already point Docker at Namespace's remote builders.
+      # Namespace runners already point Docker at Namespace's remote builders, and Groundbox keeps the
+      # default builder's layers between jobs, so neither sets up a builder.
       - name: Cold build
         continue-on-error: true
-        run: python3 bench/docker.py cold "$DOCKER_SCOPE"
+        run: python bench/docker.py cold "$DOCKER_SCOPE"
       - uses: actions/upload-artifact@v7
         with:
           name: docker-cold-${{ matrix.label }}-${{ matrix.rep }}
@@ -219,6 +221,7 @@ jobs:
       DOCKER_CACHE_URL: ${{ matrix.docker_cache_url }}
     steps:
       - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
       # Each provider's own way of keeping Docker layers between jobs (docker_cache in providers.json);
       # the rest use the GitHub Actions cache, which most providers serve from their own storage.
       - name: Set up Docker Buildx
@@ -237,14 +240,15 @@ jobs:
         uses: flamewill/setup-docker-builder@v1
         with:
           cache-key: ${{ env.DOCKER_SCOPE }}
-      # Namespace runners already point Docker at Namespace's remote builders.
+      # Namespace runners already point Docker at Namespace's remote builders, and Groundbox keeps the
+      # default builder's layers between jobs, so neither sets up a builder.
       - uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: docker-cold-${{ matrix.label }}-${{ matrix.rep }}
           path: ${{ runner.temp }}/cold
       - name: Cached build
-        run: python3 bench/docker.py cached "$DOCKER_SCOPE" "$RUNNER_TEMP/cold/docker-cold.json"
+        run: python bench/docker.py cached "$DOCKER_SCOPE" "$RUNNER_TEMP/cold/docker-cold.json"
       - uses: actions/upload-artifact@v7
         with:
           name: docker-${{ matrix.label }}-${{ matrix.rep }}

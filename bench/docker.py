@@ -49,7 +49,8 @@ def write(name, result):
 
 
 def cold(scope):
-    flags = ["--cache-to", f"type=gha,scope={scope},mode=max{GHA_URL}"] if GHA else []
+    # Concurrent jobs upload the same base image layers; some cache servers reject all but the first.
+    flags = ["--cache-to", f"type=gha,scope={scope},mode=max,ignore-error=true{GHA_URL}"] if GHA else []
     try:
         seconds, _ = build(context(), "--no-cache", *flags)
         result = {"cold_seconds": seconds}
