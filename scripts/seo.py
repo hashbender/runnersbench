@@ -68,7 +68,7 @@ def questions(data):
          + " Linux runners are each provider's 4 vCPU size on Ubuntu 24.04; Macs are each provider's smallest Apple Silicon size on macOS 26."),
         ("How are the runners benchmarked?",
          "Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, "
-         "fio sequential, 4k random and fsync disk tests, a 10-second sustained download test, package installs, a 1 GB actions/cache save and restore, and a Redis build. "
+         "fio sequential, 4k random and fsync disk tests, a 10-second sustained download test, package installs, a 1 GB actions/cache save and restore, a cold and a cached Docker build, and a Redis build. "
          "Queue time comes from the GitHub API. The site shows each metric's median and the spread across runs."),
     ]
     if per_minute:
