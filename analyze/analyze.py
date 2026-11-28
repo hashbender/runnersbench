@@ -179,6 +179,8 @@ METRICS = [
     ("download", "Download (MB/s)", lambda r: get(r, "benchmarks", "download", "mb_per_second"), True),
     ("cache_save", "Cache save 1 GB (s)", lambda r: get(r, "benchmarks", "cache", "save_seconds"), False),
     ("cache_restore", "Cache restore 1 GB (s)", lambda r: get(r, "benchmarks", "cache", "restore_seconds"), False),
+    ("docker_cold", "Docker build, no cache (s)", lambda r: get(r, "benchmarks", "docker", "cold_seconds"), False),
+    ("docker_cached", "Docker build, cached (s)", lambda r: get(r, "benchmarks", "docker", "cached_seconds"), False),
     ("redis_build", "Redis build (s)", lambda r: get(r, "benchmarks", "compile_redis", "seconds"), False),
     ("redis_cost", "$ per Redis build", cost_per_build, False),
 ]

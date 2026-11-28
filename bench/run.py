@@ -432,6 +432,12 @@ def main():
         # Timed by bench/cache.py around the workflow's actions/cache steps.
         cache = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "cache.json")
         benchmarks["cache"] = json.load(open(cache)) if os.path.exists(cache) else {"error": "cache steps didn't finish"}
+        if MACOS:
+            benchmarks["docker"] = {"skipped": "no Docker on macOS runners"}
+        else:
+            # Timed by bench/docker.py in its own workflow step.
+            docker = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "docker.json")
+            benchmarks["docker"] = json.load(open(docker)) if os.path.exists(docker) else {"error": "docker step didn't finish"}
 
     result = {
         "schema_version": SCHEMA_VERSION,
