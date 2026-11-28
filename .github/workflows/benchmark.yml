@@ -36,6 +36,7 @@ jobs:
     outputs:
       github: ${{ steps.matrix.outputs.github }}
       buildkite: ${{ steps.matrix.outputs.buildkite }}
+      docker: ${{ steps.matrix.outputs.docker }}
       any: ${{ steps.matrix.outputs.any }}
     steps:
       - uses: actions/checkout@v7
@@ -75,6 +76,8 @@ jobs:
             echo "any=$(jq '.include | length > 0' <<<"$matrix")"
             echo "github=$(jq -c '{include: [.include[] | select(has("buildkite") | not)]}' <<<"$matrix")"
             echo "buildkite=$(jq -c '{include: [.include[] | select(has("buildkite"))]}' <<<"$matrix")"
+            # GitHub's macOS runners have no Docker.
+            echo "docker=$(jq -c '{include: [.include[] | select((has("buildkite") or .os == "macos") | not)]}' <<<"$matrix")"
           } >> "$GITHUB_OUTPUT"
 
   bench:
@@ -120,19 +123,6 @@ jobs:
       - name: Check restored data
         continue-on-error: true
         run: python bench/cache.py restored "$CACHE_DIR" "${{ steps.restore.outputs.cache-hit }}"
-      # GitHub's macOS runners have no Docker.
-      - name: Set up Docker Buildx
-        if: runner.os == 'Linux'
-        continue-on-error: true
-        uses: docker/setup-buildx-action@v4
-      - name: Expose the Actions cache to Docker
-        if: runner.os == 'Linux'
-        continue-on-error: true
-        uses: crazy-max/ghaction-github-runtime@v4
-      - name: Docker build
-        if: runner.os == 'Linux'
-        continue-on-error: true
-        run: python bench/docker.py "$CACHE_KEY"
       - name: Benchmark
         env:
           RUNNER_SPEC: ${{ toJSON(matrix) }}
@@ -170,8 +160,98 @@ jobs:
           path: ${{ runner.temp }}/result.json
           if-no-files-found: error
 
+  # The cold and cached Docker builds run in separate jobs, so the cached build starts on a fresh runner
+  # and providers that keep builder state between jobs save it when the first job ends.
+  docker-cold:
+    needs: setup
+    if: ${{ fromJSON(needs.setup.outputs.docker).include[0] }}
+    name: docker cold ${{ matrix.label }} (${{ matrix.rep }})
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.setup.outputs.docker) }}
+    env:
+      DOCKER_SCOPE: docker-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.label }}-${{ matrix.rep }}
+      DOCKER_CACHE: ${{ matrix.docker_cache || 'gha' }}
+      DOCKER_CACHE_URL: ${{ matrix.docker_cache_url }}
+    steps:
+      - uses: actions/checkout@v7
+      # Each provider's own way of keeping Docker layers between jobs (docker_cache in providers.json);
+      # the rest use the GitHub Actions cache, which most providers serve from their own storage.
+      - name: Set up Docker Buildx
+        if: ${{ !matrix.docker_cache }}
+        uses: docker/setup-buildx-action@v4
+      - name: Expose the Actions cache to Docker
+        if: ${{ !matrix.docker_cache }}
+        uses: crazy-max/ghaction-github-runtime@v4
+      - name: Set up Docker builder (Blacksmith)
+        if: ${{ matrix.docker_cache == 'blacksmith' }}
+        uses: useblacksmith/setup-docker-builder@v2
+        with:
+          cache-key: ${{ env.DOCKER_SCOPE }}
+      - name: Set up Docker builder (FlameWill)
+        if: ${{ matrix.docker_cache == 'flamewill' }}
+        uses: flamewill/setup-docker-builder@v1
+        with:
+          cache-key: ${{ env.DOCKER_SCOPE }}
+      # Namespace runners already point Docker at Namespace's remote builders.
+      - name: Cold build
+        continue-on-error: true
+        run: python3 bench/docker.py cold "$DOCKER_SCOPE"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docker-cold-${{ matrix.label }}-${{ matrix.rep }}
+          path: ${{ runner.temp }}/docker-cold.json
+
+  docker-cached:
+    needs: [setup, docker-cold]
+    if: ${{ !cancelled() && fromJSON(needs.setup.outputs.docker).include[0] }}
+    name: docker cached ${{ matrix.label }} (${{ matrix.rep }})
+    runs-on: ${{ matrix.label }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.setup.outputs.docker) }}
+    env:
+      DOCKER_SCOPE: docker-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.label }}-${{ matrix.rep }}
+      DOCKER_CACHE: ${{ matrix.docker_cache || 'gha' }}
+      DOCKER_CACHE_URL: ${{ matrix.docker_cache_url }}
+    steps:
+      - uses: actions/checkout@v7
+      # Each provider's own way of keeping Docker layers between jobs (docker_cache in providers.json);
+      # the rest use the GitHub Actions cache, which most providers serve from their own storage.
+      - name: Set up Docker Buildx
+        if: ${{ !matrix.docker_cache }}
+        uses: docker/setup-buildx-action@v4
+      - name: Expose the Actions cache to Docker
+        if: ${{ !matrix.docker_cache }}
+        uses: crazy-max/ghaction-github-runtime@v4
+      - name: Set up Docker builder (Blacksmith)
+        if: ${{ matrix.docker_cache == 'blacksmith' }}
+        uses: useblacksmith/setup-docker-builder@v2
+        with:
+          cache-key: ${{ env.DOCKER_SCOPE }}
+      - name: Set up Docker builder (FlameWill)
+        if: ${{ matrix.docker_cache == 'flamewill' }}
+        uses: flamewill/setup-docker-builder@v1
+        with:
+          cache-key: ${{ env.DOCKER_SCOPE }}
+      # Namespace runners already point Docker at Namespace's remote builders.
+      - uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          name: docker-cold-${{ matrix.label }}-${{ matrix.rep }}
+          path: ${{ runner.temp }}/cold
+      - name: Cached build
+        run: python3 bench/docker.py cached "$DOCKER_SCOPE" "$RUNNER_TEMP/cold/docker-cold.json"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: docker-${{ matrix.label }}-${{ matrix.rep }}
+          path: ${{ runner.temp }}/docker.json
+
   analyze:
-    needs: [setup, bench, bench-buildkite]
+    needs: [setup, bench, bench-buildkite, docker-cached]
     if: ${{ !cancelled() && needs.setup.outputs.any == 'true' }}
     runs-on: ubuntu-24.04
     permissions:
@@ -184,7 +264,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          for prefix in buildkit-blob- index-bench-; do
+          for prefix in buildkit-blob- index-docker-; do
             gh cache list --repo "$GITHUB_REPOSITORY" --key "$prefix" --limit 1000 --json id --jq '.[].id' |
               xargs -r -n1 gh cache delete --repo "$GITHUB_REPOSITORY"
           done
@@ -196,6 +276,12 @@ jobs:
         with:
           pattern: result-*
           path: results
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: docker-*
+          path: docker
+      - name: Add the Docker builds to the results
+        run: python bench/docker.py merge docker results
       - name: Analyze
         env:
           GH_TOKEN: ${{ github.token }}

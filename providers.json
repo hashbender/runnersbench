@@ -45,6 +45,7 @@
       "arch": "x64",
       "price_per_minute": 0.008,
       "billing": {"increment_seconds": 1},
+      "docker_cache_url": "https://cache.avrea.com/",
       "enabled": true,
       "notes": "Pinned to Ubuntu 24.04 to match GitHub. Billed per second.",
       "pricing_source": "https://avrea.com/pricing"
@@ -100,6 +101,7 @@
       "arch": "x64",
       "price_per_minute": 0.008,
       "billing": {"increment_seconds": 60},
+      "docker_cache": "blacksmith",
       "enabled": true,
       "pricing_source": "https://www.blacksmith.sh/pricing"
     },
@@ -110,6 +112,7 @@
       "arch": "x64",
       "price_per_minute": 0.004,
       "billing": {"increment_seconds": 60, "minimum_seconds": 60, "grace_seconds": 15},
+      "docker_cache": "namespace",
       "enabled": true,
       "notes": "4x8 is Namespace's standard 4 vCPU shape: 4 compute units at $0.001 each. Usage above a plan's included unit minutes is billed at the $0.006 overage rate.",
       "pricing_source": "https://namespace.so/pricing"
@@ -190,6 +193,7 @@
       "arch": "arm64",
       "price_per_minute": 0.024,
       "billing": {"increment_seconds": 1},
+      "docker_cache_url": "https://cache.avrea.com/",
       "enabled": true,
       "notes": "Runs on Apple M5 Max hardware. Pinned to Ubuntu 24.04.",
       "pricing_source": "https://avrea.com/pricing"
@@ -201,6 +205,7 @@
       "arch": "arm64",
       "price_per_minute": 0.005,
       "billing": {"increment_seconds": 60},
+      "docker_cache": "blacksmith",
       "enabled": true,
       "pricing_source": "https://www.blacksmith.sh/pricing"
     },
@@ -243,6 +248,7 @@
       "arch": "arm64",
       "price_per_minute": 0.0022,
       "billing": {"increment_seconds": 60},
+      "docker_cache": "flamewill",
       "enabled": true,
       "notes": "A fresh ARM64 machine per job, 190 GB local NVMe. Prepaid credit from $10, billed per minute, no subscription.",
       "pricing_source": "https://flamewill.com/pricing/"
