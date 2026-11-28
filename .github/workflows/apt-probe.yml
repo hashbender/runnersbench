@@ -25,10 +25,10 @@ jobs:
           s=$(date +%s.%N)
           sudo apt-get update $opts 2>&1 | tail -3
           e=$(date +%s.%N)
-          echo "RESULT mode=${{ matrix.mode }} rep=${{ matrix.rep }} seconds=$(echo "$e - $s" | bc)"
+          echo "RESULT mode=${{ matrix.mode }} rep=${{ matrix.rep }} seconds=$(awk "BEGIN{print $e-$s}")"
       - name: install (benchmark packages)
         run: |
           s=$(date +%s.%N)
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq sysbench fio >/dev/null
           e=$(date +%s.%N)
-          echo "RESULT_INSTALL mode=${{ matrix.mode }} rep=${{ matrix.rep }} seconds=$(echo "$e - $s" | bc)"
+          echo "RESULT_INSTALL mode=${{ matrix.mode }} rep=${{ matrix.rep }} seconds=$(awk "BEGIN{print $e-$s}")"
