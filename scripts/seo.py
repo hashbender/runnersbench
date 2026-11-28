@@ -48,10 +48,14 @@ def questions(data):
             fastest.append(f"On {label}, {order[0]['provider_name']} built Redis fastest, in "
                            f"{order[0]['medians']['redis_build']:.1f} s" + (f", ahead of {runner_up}." if runner_up else "."))
         order = ranked(runners, "redis_cost")
-        if order:
-            cheapest.append(f"On {label}, {order[0]['provider_name']} was cheapest at "
-                            f"${order[0]['medians']['redis_cost']:.4f} per Redis build, against "
+        plain = [r for r in order if not r.get("pricing_caveat")]
+        if plain:
+            cheapest.append(f"On {label}, {plain[0]['provider_name']} was the cheapest pay-as-you-go runner at "
+                            f"${plain[0]['medians']['redis_cost']:.4f} per Redis build, against "
                             f"${order[-1]['medians']['redis_cost']:.4f} for {order[-1]['provider_name']}.")
+            if order[0] is not plain[0]:
+                cheapest.append(f"{order[0]['provider_name']}'s compute cost was lower, at "
+                                f"${order[0]['medians']['redis_cost']:.4f}, but extra costs apply: {order[0]['pricing_caveat']}")
         covered.append(f"{label}: {join(sorted({r['provider_name'] for r in runners}))}.")
     per_minute = sorted({r["provider_name"] for r in data["runners"] if (r.get("billing") or "").startswith("per minute")})
 
@@ -59,12 +63,12 @@ def questions(data):
         ("Which GitHub Actions runner is the fastest?",
          " ".join(fastest) + " Build time is the median of three runs of make -j on the Redis source."),
         ("Which GitHub Actions runner is the cheapest?",
-         " ".join(cheapest) + " Costs use each provider's list price and how it rounds a job's duration."),
+         " ".join(cheapest) + " Costs use each provider's list price and how it rounds a job's duration; providers that need a plan or charge other fees are listed but not ranked cheapest."),
         ("Which runner providers are compared?", " ".join(covered)
          + " Linux runners are each provider's 4 vCPU size on Ubuntu 24.04; Macs are each provider's smallest Apple Silicon size on macOS 26."),
         ("How are the runners benchmarked?",
          "Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, "
-         "fio sequential and 4k random disk tests, a download from Cloudflare, package installs, a 1 GB actions/cache save and restore, and a Redis build. "
+         "fio sequential, 4k random and fsync disk tests, a 10-second sustained download test, package installs, a 1 GB actions/cache save and restore, a cold and a cached Docker build, and a Redis build. "
          "Queue time comes from the GitHub API. The site shows each metric's median and the spread across runs."),
     ]
     if per_minute:

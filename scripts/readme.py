@@ -11,16 +11,26 @@ START, END = "<!-- providers:start -->", "<!-- providers:end -->"
 PLATFORMS = [("x64", "Linux x64"), ("arm64", "Linux arm64"), ("macos", "macOS")]
 
 
+def compliance(entry):
+    """Same wording as complianceText() in site/app.js."""
+    if not entry:
+        return "–"
+    soc2 = "SOC 2 in progress" if entry.get("soc2") == "In progress" else entry.get("soc2") and f"SOC 2 {entry['soc2']}"
+    text = " · ".join(filter(None, [soc2, "ISO 27001" if entry.get("iso27001") is True else None]))
+    return f"[{text}]({entry['source']})" if text else "–"
+
+
 def table(data):
     names, platforms = {}, {}
     for r in data["runners"]:
         names[r["provider"]] = r["provider_name"]
         platforms.setdefault(r["provider"], set()).add(r["platform"])
-    rows = ["| | Provider | " + " | ".join(label for _, label in PLATFORMS) + " |", "|---|---|" + ":-:|" * len(PLATFORMS)]
+    rows = ["| | Provider | " + " | ".join(label for _, label in PLATFORMS) + " | Compliance |",
+            "|---|---|" + ":-:|" * len(PLATFORMS) + "---|"]
     for provider in sorted(names):
         swatch = f"![](https://img.shields.io/badge/-%20-{data['colors'][provider].lstrip('#')}?style=flat-square)"
         ticks = " | ".join("✓" if key in platforms[provider] else "" for key, _ in PLATFORMS)
-        rows.append(f"| {swatch} | {names[provider]} | {ticks} |")
+        rows.append(f"| {swatch} | {names[provider]} | {ticks} | {compliance(data.get('compliance', {}).get(provider))} |")
     return "\n".join(rows)
 
 

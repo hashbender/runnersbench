@@ -105,6 +105,29 @@ def billing_label(billing):
     return ", ".join(parts)
 
 
+CONTAINERS = {"docker", "podman", "lxc", "lxc-libvirt", "systemd-nspawn", "rkt", "wsl", "proot", "pouch",
+              "container-other"}
+
+
+def virtualization(system):
+    """The VM layer, plus "+ container" when the job also runs in a container.
+
+    systemd-detect-virt reports a container whenever it finds markers like /.dockerenv, which VM images built
+    from Docker images keep. So a container only counts when the root filesystem is an overlay.
+    """
+    raw = system.get("virtualization")
+    layers = system.get("virtualization_layers")
+    if layers:
+        vm, container = layers.get("vm"), layers.get("container")
+    elif raw in CONTAINERS:
+        vm, container = (get(system, "cpu", "hypervisor") or "").lower() or None, raw
+    else:
+        vm, container = raw, None
+    if container and (get(system, "disk", "mount") or "").startswith("overlay"):
+        return f"{vm} + container" if vm else "container"
+    return vm or raw
+
+
 def cost_per_build(r):
     price, seconds = get(r, "spec", "price_per_minute"), get(r, "benchmarks", "compile_redis", "seconds")
     if price is None or seconds is None:
@@ -113,7 +136,33 @@ def cost_per_build(r):
 
 
 # Assigned to providers in alphabetical order; the site and README both read them from data.json.
-COLORS = ["#4269d0", "#efb118", "#ff725c", "#6cc5b0", "#3ca951", "#ff8ab7", "#a463f2", "#97bbf5", "#9c6b4e", "#9498a0"]
+# Pinned per provider so adding one doesn't recolour the others.
+COLORS = {
+    "avrea": "#4269d0", "blacksmith": "#efb118", "boat": "#ff725c", "buildkite": "#6cc5b0", "celesto": "#3ca951",
+    "checklane": "#ff8ab7", "depot": "#a463f2", "flamewill": "#97bbf5", "github": "#9c6b4e", "groundbox": "#9498a0",
+    "homemade": "#a9c934", "luxor": "#2f4b7c", "namespace": "#d6336c", "ubicloud": "#8c8c1a", "warpbuild": "#00a3a3",
+}
+DEFAULT_COLOR = "#64748b"
+
+# For results recorded before run.py kept ipinfo's "loc". Keyed by the location shown on the site.
+CITY_COORDINATES = {
+    "Ashburn, US": (39.04, -77.49), "Boardman, US": (45.84, -119.70), "Chicago, US": (41.88, -87.63),
+    "Des Moines, US": (41.59, -93.62), "Falkenstein, DE": (50.48, 12.37), "Frankfurt am Main, DE": (50.11, 8.68),
+    "Gravelines, FR": (50.99, 2.13), "Helsinki, FI": (60.17, 24.94), "Las Vegas, US": (36.17, -115.14),
+    "London, GB": (51.51, -0.13), "Martinez, US": (38.02, -122.13), "Phoenix, US": (33.45, -112.07),
+    "Roubaix, FR": (50.69, 3.18), "San Jose, US": (37.34, -121.89), "Seattle, US": (47.61, -122.33),
+    "Stockholm, SE": (59.33, 18.07), "Strasbourg, FR": (48.57, 7.75), "Warrenton, US": (38.71, -77.80),
+}
+
+
+def coordinates(network, location):
+    try:
+        lat, lon = (float(x) for x in network["loc"].split(","))
+        return [lat, lon]
+    except (KeyError, AttributeError, ValueError):
+        known = CITY_COORDINATES.get(location)
+        return list(known) if known else None
+
 
 # (key, column header, extractor, higher_is_better)
 METRICS = [
@@ -126,9 +175,12 @@ METRICS = [
     ("seq_write", "Seq write (MB/s)", lambda r: get(r, "benchmarks", "disk", "seq_write", "mb_per_second"), True),
     ("rand_read", "4k rand read (IOPS)", lambda r: get(r, "benchmarks", "disk", "rand_read", "iops"), True),
     ("rand_write", "4k rand write (IOPS)", lambda r: get(r, "benchmarks", "disk", "rand_write", "iops"), True),
-    ("download", "Download (MB/s)", lambda r: get(r, "benchmarks", "download_cloudflare", "mb_per_second"), True),
+    ("fsync", "fsync writes (/s)", lambda r: get(r, "benchmarks", "fsync", "writes_per_second"), True),
+    ("download", "Download (MB/s)", lambda r: get(r, "benchmarks", "download", "mb_per_second"), True),
     ("cache_save", "Cache save 1 GB (s)", lambda r: get(r, "benchmarks", "cache", "save_seconds"), False),
     ("cache_restore", "Cache restore 1 GB (s)", lambda r: get(r, "benchmarks", "cache", "restore_seconds"), False),
+    ("docker_cold", "Docker build, no cache (s)", lambda r: get(r, "benchmarks", "docker", "cold_seconds"), False),
+    ("docker_cached", "Docker build, cached (s)", lambda r: get(r, "benchmarks", "docker", "cached_seconds"), False),
     ("redis_build", "Redis build (s)", lambda r: get(r, "benchmarks", "compile_redis", "seconds"), False),
     ("redis_cost", "$ per Redis build", cost_per_build, False),
 ]
@@ -163,6 +215,7 @@ def summarise(results):
         mem = get(system, "memory", "total_bytes")
         disk = get(system, "disk", "total_bytes")
         net = system.get("network") or {}
+        location = ", ".join(filter(None, [net.get("city"), net.get("country")])) or None
         medians, ranges = {}, {}
         for key, _, extract, _ in METRICS:
             values = [v for v in map(extract, samples) if v is not None]
@@ -176,12 +229,14 @@ def summarise(results):
             "platform": "macos" if spec.get("os") == "macos" else spec.get("arch"),
             "price_per_minute": spec.get("price_per_minute"),
             "billing": billing_label(spec.get("billing")),
+            "pricing_caveat": spec.get("pricing_caveat"),
             "cpu_models": sorted({get(r, "system", "cpu", "model") or "?" for r in samples}),
             "vcpus": get(system, "cpu", "available_cpus"),
             "memory_gib": round(mem / 2**30, 1) if mem else None,
             "disk_gb": round(disk / 1e9) if disk else None,
-            "virtualization": system.get("virtualization"),
-            "location": ", ".join(filter(None, [net.get("city"), net.get("country")])) or None,
+            "virtualization": virtualization(system),
+            "location": location,
+            "coordinates": coordinates(net, location),
             "network": net.get("org"),
             "medians": medians,
             "ranges": ranges,
@@ -206,7 +261,7 @@ def summarise(results):
         ],
         "metrics": [{"key": k, "label": h, "higher_is_better": hib} for k, h, _, hib in METRICS],
         "runners": runners,
-        "colors": {p: COLORS[i % len(COLORS)] for i, p in enumerate(sorted({x["provider"] for x in runners}))},
+        "colors": {p: COLORS.get(p, DEFAULT_COLOR) for p in sorted({x["provider"] for x in runners})},
         "errors": errors,
     }
 
@@ -224,13 +279,18 @@ def report(summary):
     for x in runners:
         cells = [x["provider"], f"`{x['label']}`"]
         for key, header, _, higher_is_better in METRICS:
-            column = [y["medians"][key] for y in runners if y["medians"][key] is not None]
+            # Costs that leave out a plan or other fees are shown, but can't be the cheapest.
+            column = [y["medians"][key] for y in runners
+                      if y["medians"][key] is not None and not (key == "redis_cost" and y["pricing_caveat"])]
             best = (max if higher_is_better else min)(column) if len(column) > 1 else None
             value = x["medians"][key]
             text = fmt(value, header)
             if x["ranges"][key] and x["ranges"][key][0] != x["ranges"][key][1]:
                 text += f" ({' to '.join(fmt(v, header) for v in x['ranges'][key])})"
-            cells.append(f"**{text}**" if value is not None and value == best else text)
+            if key == "redis_cost" and value is not None and x["pricing_caveat"]:
+                text += "\\*"
+            caveated = key == "redis_cost" and x["pricing_caveat"]
+            cells.append(f"**{text}**" if value is not None and value == best and not caveated else text)
         bench_rows.append(cells)
 
     sections = [
@@ -245,6 +305,10 @@ def report(summary):
         "## Benchmarks",
         table(["Provider", "Label"] + [h for _, h, _, _ in METRICS], bench_rows),
     ]
+    caveats = [x for x in runners if x["pricing_caveat"]]
+    if caveats:
+        sections.append("\\* Not plain pay-as-you-go, so the cost above leaves out:\n\n"
+                        + "\n".join(f"- `{x['label']}`: {x['pricing_caveat']}" for x in caveats))
     if summary["errors"]:
         sections += ["## Errors", "\n".join(f"- `{e['label']}` {e['benchmark']}: {e['error']}" for e in summary["errors"])]
     return "\n\n".join(sections) + "\n"
@@ -275,6 +339,9 @@ def main():
         with open(args.json, "w") as f:
             json.dump(results, f, indent=2)
     summary = summarise(results)
+    if args.providers:
+        with open(args.providers) as f:
+            summary["compliance"] = json.load(f).get("compliance", {})
     if args.summary:
         with open(args.summary, "w") as f:
             json.dump(summary, f, indent=1)

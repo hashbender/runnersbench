@@ -13,6 +13,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import urllib.request
 from datetime import datetime, timezone
@@ -25,8 +26,17 @@ with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "VERSION")) a
 DURATION = 15  # seconds per sysbench/fio test
 WARMUP = 5  # seconds of all-thread CPU load before the CPU tests, so clocks and caches settle
 REDIS_VERSION = "8.10.3"
-# Cloudflare rejects requests above roughly 50 MB.
-CLOUDFLARE_URL = "https://speed.cloudflare.com/__down?bytes=50000000"
+# 1 GB of random data on this repo's download-test release, fetched in byte ranges. Cloudflare's speed
+# test can't be used for downloads: it answers 429 for an hour after roughly 1.5 GB from one address.
+DOWNLOAD_URL = "https://github.com/lockyer-labs/runnersbench/releases/download/download-test/1g.bin"
+DOWNLOAD_CHUNK = 50_000_000
+# A single 50 MB request finishes in a fraction of a second on a fast link, which measures burst speed;
+# back-to-back requests over several connections reach sustained limits. Each test stops after
+# NET_SECONDS or NET_BYTES.
+NET_SECONDS = 10
+NET_BYTES = 1_000_000_000
+NET_STREAMS = 4
+FSYNC_SECONDS = 10
 REDIS_URL = f"https://github.com/redis/redis/archive/refs/tags/{REDIS_VERSION}.tar.gz"
 APT_PACKAGES = ["sysbench", "fio", "build-essential"]
 # macOS runners already have the Xcode command line tools, so only the benchmarks come from Homebrew.
@@ -73,6 +83,40 @@ def sysctl(name):
     return try_sh(["sysctl", "-n", name])
 
 
+def cpu_counters():
+    """Clock, hypervisor steal and cgroup CPU counters, to diff around a workload.
+
+    Adapted from Buildkite's CPU steal probe. Steal is only reported by some hypervisors (KVM, Firecracker;
+    not Hyper-V), and macOS has none of these files, so missing counters are left out.
+    """
+    counters = {"wall": time.monotonic()}
+    stat = re.search(r"^cpu\s+(.+)$", read("/proc/stat") or "", re.M)
+    fields = [int(x) for x in stat.group(1).split()] if stat else []
+    if len(fields) >= 8:
+        counters["steal"], counters["total"] = fields[7], sum(fields)
+    cgroup = read("/sys/fs/cgroup/cpu.stat") or read("/sys/fs/cgroup/cpu/cpu.stat") or ""
+    for key, pattern, scale in [("usage_usec", r"usage_usec", 1), ("nr_throttled", r"nr_throttled", 1),
+                                ("throttled_usec", r"throttled_usec", 1), ("throttled_usec", r"throttled_time", 1 / 1000)]:
+        m = re.search(rf"^{pattern}\s+(\d+)", cgroup, re.M)
+        if m and key not in counters:
+            counters[key] = int(m.group(1)) * scale
+    return counters
+
+
+def cpu_accounting(start, end):
+    wall = end["wall"] - start["wall"]
+    out = {"wall_seconds": wall}
+    if "total" in start and end["total"] > start["total"]:
+        out["steal_pct"] = (end["steal"] - start["steal"]) / (end["total"] - start["total"]) * 100
+    if "usage_usec" in start:
+        out["cpu_per_wall"] = (end["usage_usec"] - start["usage_usec"]) / 1e6 / wall
+    if "nr_throttled" in start:
+        out["nr_throttled"] = end["nr_throttled"] - start["nr_throttled"]
+    if "throttled_usec" in start:
+        out["throttled_ms"] = (end["throttled_usec"] - start["throttled_usec"]) / 1000
+    return out
+
+
 def flatten_lscpu(entries, out):
     for entry in entries:
         out[entry["field"].rstrip(":")] = entry.get("data")
@@ -86,7 +130,7 @@ def ip_info():
             data = json.load(resp)
     except Exception as e:
         return {"error": str(e)}
-    return {k: data.get(k) for k in ("ip", "city", "region", "country", "org")}
+    return {k: data.get(k) for k in ("ip", "city", "region", "country", "loc", "org")}
 
 
 def system_info(workdir):
@@ -111,12 +155,15 @@ def system_info(workdir):
         os_name = f"macOS {try_sh(['sw_vers', '-productVersion'])}"
         # kern.hv_vmm_present is 1 inside a Virtualization.framework VM.
         virtualization = "apple" if sysctl("kern.hv_vmm_present") == "1" else "none"
+        layers = {"vm": virtualization, "container": None}
         dmi = {"product_name": sysctl("hw.model")}
     else:
         model, vendor = lscpu.get("Model name") or cpuinfo_field("model name"), lscpu.get("Vendor ID")
         mem_bytes = int(mem_kb.group(1)) * 1024 if mem_kb else None
         os_name = pretty_name.group(1) if pretty_name else None
         virtualization = try_sh("systemd-detect-virt")
+        # Plain systemd-detect-virt reports only the innermost layer, and calls unknown containers "docker".
+        layers = {"vm": try_sh(["systemd-detect-virt", "--vm"]), "container": try_sh(["systemd-detect-virt", "--container"])}
         dmi = {f: read(f"/sys/class/dmi/id/{f}") or try_sh(f"sudo -n cat /sys/class/dmi/id/{f}") for f in DMI_FIELDS}
 
     return {
@@ -153,6 +200,7 @@ def system_info(workdir):
             "image_version": os.environ.get("ImageVersion"),
         },
         "virtualization": virtualization,
+        "virtualization_layers": layers,
         "dmi": dmi,
         "network": ip_info(),
         "runner": {
@@ -246,18 +294,92 @@ def curl(url, dest="/dev/null"):
             "connect_seconds": connect, "ttfb_seconds": ttfb}
 
 
+def bench_transfer(command, chunk):
+    """Run command(i) for request i on NET_STREAMS connections until NET_SECONDS or NET_BYTES."""
+    start = time.monotonic()
+    deadline = start + NET_SECONDS
+    streams, errors = [], []
+    next_request = [0]
+    lock = threading.Lock()
+
+    def take():
+        with lock:
+            i = next_request[0]
+            next_request[0] += 1
+            return i if i < NET_BYTES // chunk and time.monotonic() < deadline else None
+
+    def stream():
+        moved, requests = 0, 0
+        while (i := take()) is not None:
+            # Stop at the deadline even mid-request; curl exits 28 but still reports the bytes it got.
+            cmd = command(i)
+            cmd[1:1] = ["--max-time", f"{max(deadline - time.monotonic(), 0.5):.2f}"]
+            proc = subprocess.run(cmd, capture_output=True, text=True)
+            if proc.returncode not in (0, 28) or not proc.stdout.strip():
+                errors.append(f"curl exited {proc.returncode}: {proc.stderr.strip()[:200]}")
+                break
+            moved += float(proc.stdout)
+            requests += 1
+            if proc.returncode == 28:
+                break
+        streams.append((moved, requests, time.monotonic()))
+
+    threads = [threading.Thread(target=stream) for _ in range(NET_STREAMS)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    moved = sum(s[0] for s in streams)
+    if not moved:
+        raise CommandError(errors[0] if errors else "nothing transferred")
+    seconds = max(s[2] for s in streams) - start
+    return {"mb_per_second": moved / seconds / 1e6, "bytes": int(moved), "seconds": seconds,
+            "streams": NET_STREAMS, "requests": sum(s[1] for s in streams), "errors": errors}
+
+
+TRANSFER = ["curl", "-sS", "--fail", "-L", "-o", "/dev/null", "-w", "%{size_download}"]
+
+
+def bench_download():
+    return bench_transfer(
+        lambda i: [*TRANSFER, "-r", f"{i * DOWNLOAD_CHUNK}-{(i + 1) * DOWNLOAD_CHUNK - 1}", DOWNLOAD_URL], DOWNLOAD_CHUNK)
+
+
+def bench_fsync(workdir):
+    """4k writes, each followed by fsync, as databases and package managers do.
+
+    Very high rates mean the host acknowledges flushes without reaching stable storage, which is fine for
+    throwaway CI machines.
+    """
+    path = os.path.join(workdir, "fsync.dat")
+    try:
+        out = sh(["fio", "--name=fsync", f"--filename={path}", "--size=256M", "--rw=write", "--bs=4k",
+                  "--ioengine=sync", "--fsync=1", "--time_based", f"--runtime={FSYNC_SECONDS}",
+                  "--output-format=json"])
+    finally:
+        if os.path.exists(path):
+            os.remove(path)
+    job = json.loads(out[out.index("{"):])["jobs"][0]
+    sync = job.get("sync", {}).get("lat_ns", {})
+    p99 = sync.get("percentile", {}).get("99.000000")
+    return {"writes_per_second": job["write"]["iops"], "sync_mean_us": sync.get("mean", 0) / 1000 or None,
+            "sync_p99_us": p99 / 1000 if p99 else None}
+
+
 def bench_compile_redis(workdir):
     tarball = os.path.join(workdir, "redis.tar.gz")
     download = curl(REDIS_URL, tarball)
     sh(["tar", "xzf", tarball, "-C", workdir])
     src = os.path.join(workdir, f"redis-{REDIS_VERSION}")
     jobs = cpu_count()
-    start = time.monotonic()
+    start, counters = time.monotonic(), cpu_counters()
     # The top-level Makefile's module wrapper is broken in release tarballs; build the core directly.
     sh(["make", "-C", "src", f"-j{jobs}", "MALLOC=libc", "BUILD_TLS=no"], cwd=src)
     seconds = time.monotonic() - start
+    accounting = cpu_accounting(counters, cpu_counters())
     shutil.rmtree(src, ignore_errors=True)
-    return {"version": REDIS_VERSION, "jobs": jobs, "seconds": seconds, "github_download": download}
+    return {"version": REDIS_VERSION, "jobs": jobs, "seconds": seconds, "github_download": download,
+            "cpu_accounting": accounting}
 
 
 def run(name, fn, *args):
@@ -281,6 +403,7 @@ def main():
     args = parser.parse_args()
     os.makedirs(args.workdir, exist_ok=True)
     started_at = datetime.now(timezone.utc).isoformat()
+    run_counters = cpu_counters()
 
     system = run("system info", system_info, args.workdir)
     cpus = cpu_count()
@@ -293,15 +416,25 @@ def main():
     else:
         run("sysbench cpu warm-up", bench_sysbench_cpu, cpus, WARMUP)
         benchmarks["cpu_single"] = run("sysbench cpu (1 thread)", bench_sysbench_cpu, 1)
+        counters = cpu_counters()
         benchmarks["cpu_multi"] = run(f"sysbench cpu ({cpus} threads)", bench_sysbench_cpu, cpus)
+        benchmarks["cpu_multi"]["cpu_accounting"] = cpu_accounting(counters, cpu_counters())
     benchmarks["memory"] = run("sysbench memory", bench_sysbench_memory)
     benchmarks["disk"] = run("fio", bench_fio, args.workdir)
-    benchmarks["download_cloudflare"] = run("download from Cloudflare", curl, CLOUDFLARE_URL)
+    if MACOS:
+        # A plain fsync on macOS doesn't reach the disk (that needs F_FULLFSYNC), so it isn't comparable.
+        benchmarks["fsync"] = {"skipped": "fsync doesn't flush to disk on macOS"}
+    else:
+        benchmarks["fsync"] = run("fio fsync", bench_fsync, args.workdir)
+    benchmarks["download"] = run("download from GitHub", bench_download)
     benchmarks["compile_redis"] = run("compile redis", bench_compile_redis, args.workdir)
     if os.environ.get("GITHUB_ACTIONS") == "true":
         # Timed by bench/cache.py around the workflow's actions/cache steps.
         cache = os.path.join(os.environ.get("RUNNER_TEMP", "/tmp"), "cache.json")
         benchmarks["cache"] = json.load(open(cache)) if os.path.exists(cache) else {"error": "cache steps didn't finish"}
+        if MACOS:
+            benchmarks["docker"] = {"skipped": "no Docker on macOS runners"}
+        # On Linux, the workflow's docker jobs time the Docker builds and analyze adds them (bench/docker.py merge).
 
     result = {
         "schema_version": SCHEMA_VERSION,
@@ -317,6 +450,7 @@ def main():
         "finished_at": datetime.now(timezone.utc).isoformat(),
         "system": system,
         "benchmarks": benchmarks,
+        "cpu_accounting": cpu_accounting(run_counters, cpu_counters()),
     }
     os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
     with open(args.output, "w") as f:

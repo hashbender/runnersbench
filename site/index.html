@@ -42,35 +42,61 @@
     <div class="wrap">
       <nav>
         <span class="brand">runners<span>/bench</span></span>
-        <span class="actions">
-          <a class="button" href="https://x.com/daniellockyer" aria-label="X">𝕏</a>
-          <a class="button" href="https://github.com/lockyer-labs/runnersbench">GitHub</a>
+        <span class="links-top">
+          <a class="wide-only" href="https://github.com/lockyer-labs/runnersbench/issues/new?template=provider.yml">Suggest a provider</a>
+          <a href="https://github.com/lockyer-labs/runnersbench">GitHub</a>
+          <a href="https://x.com/daniellockyer">𝕏</a>
         </span>
       </nav>
       <h1>CI runner benchmarks</h1>
       <p class="lede" id="lede">GitHub Actions runner providers, benchmarked side by side on Linux x64, arm64 and macOS. Refreshed weekly.</p>
       <div id="tabs" class="tabs" role="tablist"></div>
       <div id="stats" class="stats"></div>
-      <p id="meta" class="meta"></p>
+      <div class="hero-foot">
+        <p id="meta" class="meta"></p>
+        <a class="sponsor" href="https://go.polylane.com/runnersbench">Sponsored by <picture><source media="(prefers-color-scheme: dark)" srcset="polylane.svg"><img src="polylane-green.svg" alt="Polylane" width="160" height="44"></picture></a>
+      </div>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </header>
+  <nav class="section-nav" aria-label="Sections">
+    <div class="wrap">
+      <a href="#s-benchmarks">Benchmarks</a>
+      <a href="#s-leaderboards">Leaderboards</a>
+      <a href="#s-runners">Runners</a>
+      <a href="#s-locations">Locations</a>
+      <a href="#questions">Questions</a>
+    </div>
+  </nav>
   <main class="wrap">
-    <section>
+    <section id="s-benchmarks">
       <h2>Benchmarks</h2>
-      <p class="caption" id="benchmarks-caption"></p>
+      <div class="table-tools">
+        <p class="caption" id="benchmarks-caption"></p>
+        <span class="heat-controls">
+          <span class="heat-legend" id="heat-legend" hidden><span>best</span><span class="heat-scale" aria-hidden="true"></span><span>¼ or worse</span></span>
+          <label class="toggle"><input type="checkbox" id="heat-toggle"> Heat map</label>
+        </span>
+      </div>
       <div class="scroll bleed"><table id="benchmarks"></table></div>
+      <p class="caption pricing-notes" hidden></p>
     </section>
-    <section>
+    <section id="s-leaderboards">
       <h2>Leaderboards</h2>
-      <p class="note">Each metric ranked from best to worst.</p>
+      <p class="note">Each metric ranked from best to worst, or combine the ones you care about.</p>
+      <div id="custom" class="board custom"></div>
       <div id="boards" class="grid"></div>
     </section>
-    <section>
+    <section id="s-runners">
       <h2>Runners</h2>
-      <p class="note">What each provider's runner reported about itself. Measured links to the run its results came from.</p>
+      <p class="note">What each provider's runner reported about itself. Compliance is what each provider states on its own site, linked to the source.</p>
       <p class="caption" id="runners-caption"></p>
       <div class="scroll"><table id="runners"></table></div>
+      <p class="caption pricing-notes" hidden></p>
+    </section>
+    <section id="s-locations">
+      <h2>Locations</h2>
+      <p class="note">Approximate, from each runner's IP address: where its traffic reaches the internet.</p>
+      <div id="map" class="map"></div>
     </section>
     <section id="questions">
       <h2>Questions</h2>
@@ -85,9 +111,10 @@
   </main>
   <footer>
     <div class="wrap">
-      <p>Every runner runs <code>bench/run.py</code>: sysbench, fio, a download test and a Redis build.</p>
+      <p>Every runner runs <code>bench/run.py</code>: sysbench, fio, a download test, Docker builds and a Redis build.</p>
       <p class="links">
         <a href="https://github.com/lockyer-labs/runnersbench">Source and methodology</a>
+        <a href="https://github.com/lockyer-labs/runnersbench/issues/new?template=provider.yml">Suggest a provider</a>
         <a href="report.md">Markdown report</a>
         <a href="data.json">data.json</a>
         <a href="results.json">Raw results</a>
