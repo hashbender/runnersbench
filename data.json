@@ -1,13 +1,13 @@
 {
- "generated_at": "2026-11-28T06:11:36.213938+00:00",
+ "generated_at": "2026-11-28T07:08:08.724363+00:00",
  "sample_count": 6,
  "benchmark_versions": [
-  3
+  5
  ],
  "runs": [
   {
-   "run_id": "46115207097",
-   "url": "https://github.com/hashbender/runnersbench/actions/runs/46115207097"
+   "run_id": "46119501692",
+   "url": "https://github.com/hashbender/runnersbench/actions/runs/46119501692"
   }
  ],
  "metrics": [
@@ -57,6 +57,11 @@
    "higher_is_better": true
   },
   {
+   "key": "fsync",
+   "label": "fsync writes (/s)",
+   "higher_is_better": true
+  },
+  {
    "key": "download",
    "label": "Download (MB/s)",
    "higher_is_better": true
@@ -69,6 +74,16 @@
   {
    "key": "cache_restore",
    "label": "Cache restore 1 GB (s)",
+   "higher_is_better": false
+  },
+  {
+   "key": "docker_cold",
+   "label": "Docker build, no cache (s)",
+   "higher_is_better": false
+  },
+  {
+   "key": "docker_cached",
+   "label": "Docker build, cached (s)",
    "higher_is_better": false
   },
   {
@@ -91,6 +106,7 @@
    "platform": "macos",
    "price_per_minute": 0.08,
    "billing": "per second",
+   "pricing_caveat": null,
    "cpu_models": [
     "Apple M4 Pro (Virtual)"
    ],
@@ -99,69 +115,79 @@
    "disk_gb": 449,
    "virtualization": "apple",
    "location": "Seattle, US",
+   "coordinates": [
+    47.6062,
+    -122.3321
+   ],
    "network": "AS19538 Luxor",
    "medians": {
-    "queue": 30.0,
-    "apt_install": 5.181814958000018,
+    "queue": 26.0,
+    "apt_install": 5.39723833299999,
     "cpu_single": null,
     "cpu_multi": null,
-    "memory": 30460.26,
-    "seq_read": 13430.664131,
-    "seq_write": 12065.893157,
-    "rand_read": 96637.224185,
-    "rand_write": 59233.517765,
-    "download": 205.434988,
-    "cache_save": 4.299369812011719,
-    "cache_restore": 2.9779069423675537,
-    "redis_build": 19.984861540999987,
+    "memory": 30494.43,
+    "seq_read": 13658.749158,
+    "seq_write": 12028.848411,
+    "rand_read": 98304.246384,
+    "rand_write": 58845.076995,
+    "fsync": null,
+    "download": 465.31431727604996,
+    "cache_save": 4.005343914031982,
+    "cache_restore": 2.7573459148406982,
+    "docker_cold": null,
+    "docker_cached": null,
+    "redis_build": 19.943523166000034,
     "redis_cost": 0.02666666666666667
    },
    "ranges": {
     "queue": [
-     29.0,
-     30.0
+     26.0,
+     27.0
     ],
     "apt_install": [
-     4.629717959000004,
-     5.2321021250000115
+     4.557890041999997,
+     5.417257208000024
     ],
     "cpu_single": null,
     "cpu_multi": null,
     "memory": [
-     30426.09,
-     33792.14
+     30407.12,
+     33830.34
     ],
     "seq_read": [
-     12464.500711,
-     16487.478814
+     12779.262242,
+     17061.01165
     ],
     "seq_write": [
-     11387.894648,
-     14807.632242
+     11203.916777,
+     14690.47916
     ],
     "rand_read": [
-     96033.264449,
-     132439.504033
+     96639.490701,
+     132944.870342
     ],
     "rand_write": [
-     58551.029931,
-     77363.509099
+     57825.411639,
+     76435.637624
     ],
+    "fsync": null,
     "download": [
-     203.268558,
-     221.257539
+     364.6456917729267,
+     562.8096640328741
     ],
     "cache_save": [
-     4.253682851791382,
-     4.488863945007324
+     3.8681740760803223,
+     4.234673023223877
     ],
     "cache_restore": [
-     2.7854578495025635,
-     3.1982078552246094
+     2.756824254989624,
+     2.9463441371917725
     ],
+    "docker_cold": null,
+    "docker_cached": null,
     "redis_build": [
-     18.271739459000003,
-     20.22855470899998
+     18.136339291000013,
+     20.090449500000034
     ],
     "redis_cost": [
      0.025333333333333333,
@@ -169,8 +195,8 @@
     ]
    },
    "sample_count": 3,
-   "measured_at": "2026-11-28T06:09:13.967161+00:00",
-   "run_url": "https://github.com/hashbender/runnersbench/actions/runs/46115207097"
+   "measured_at": "2026-11-28T07:05:29.171080+00:00",
+   "run_url": "https://github.com/hashbender/runnersbench/actions/runs/46119501692"
   },
   {
    "provider": "luxor",
@@ -180,6 +206,7 @@
    "platform": "x64",
    "price_per_minute": 0.008,
    "billing": "per second",
+   "pricing_caveat": null,
    "cpu_models": [
     "AMD Ryzen 9 9950X 16-Core Processor"
    ],
@@ -188,75 +215,91 @@
    "disk_gb": 156,
    "virtualization": "kvm",
    "location": "Seattle, US",
+   "coordinates": [
+    47.6062,
+    -122.3321
+   ],
    "network": "AS19538 Luxor",
    "medians": {
-    "queue": 10.0,
-    "apt_install": 5.027173875999999,
-    "cpu_single": 6905.9,
-    "cpu_multi": 26966.62,
-    "memory": 42689.45,
-    "seq_read": 18489.076958,
-    "seq_write": 16561.992647,
-    "rand_read": 95856.476235,
-    "rand_write": 120859.142724,
-    "download": 380.147192,
-    "cache_save": 4.232760667800903,
-    "cache_restore": 1.5187592506408691,
-    "redis_build": 23.59391094899999,
+    "queue": 6.0,
+    "apt_install": 5.112358861000001,
+    "cpu_single": 6898.92,
+    "cpu_multi": 26804.24,
+    "memory": 42504.46,
+    "seq_read": 19136.354724,
+    "seq_write": 15391.580239,
+    "rand_read": 96019.732018,
+    "rand_write": 111380.374642,
+    "fsync": 25881.411859,
+    "download": 502.4300562245147,
+    "cache_save": 4.2086265087127686,
+    "cache_restore": 1.6069369316101074,
+    "docker_cold": 11.528159439,
+    "docker_cached": 4.939660131999998,
+    "redis_build": 23.557914485999987,
     "redis_cost": 0.0032
    },
    "ranges": {
     "queue": [
-     10.0,
-     10.0
+     6.0,
+     7.0
     ],
     "apt_install": [
-     5.0234407569999995,
-     5.084116198
+     5.029757548000003,
+     5.132384708
     ],
     "cpu_single": [
-     6882.32,
-     6985.98
+     6878.4,
+     6904.36
     ],
     "cpu_multi": [
-     26744.13,
-     27209.57
+     26799.22,
+     26833.11
     ],
     "memory": [
-     42381.1,
-     43473.83
+     42489.57,
+     42630.04
     ],
     "seq_read": [
-     17164.953555,
-     19262.594858
+     17964.614207,
+     23885.598052
     ],
     "seq_write": [
-     15263.173192,
-     17909.736792
+     15100.514945,
+     19853.323194
     ],
     "rand_read": [
-     80431.704553,
-     102340.843944
+     80279.981335,
+     99682.421172
     ],
     "rand_write": [
-     117731.751217,
-     135243.650423
+     105475.301647,
+     115940.737284
+    ],
+    "fsync": [
+     23273.472653,
+     26513.448655
     ],
     "download": [
-     342.752162,
-     397.178444
+     128.54073691252992,
+     528.856866833595
     ],
     "cache_save": [
-     4.225048065185547,
-     4.377527475357056
+     4.0012452602386475,
+     4.222231388092041
     ],
     "cache_restore": [
-     1.5081963539123535,
-     1.8039040565490723
+     1.4413702487945557,
+     1.6263329982757568
     ],
+    "docker_cold": [
+     11.298589533,
+     13.307105110999998
+    ],
+    "docker_cached": null,
     "redis_build": [
-     23.255184070000013,
-     23.712238565000007
+     23.493694715000004,
+     23.568491299999977
     ],
     "redis_cost": [
      0.0032,
@@ -264,12 +307,79 @@
     ]
    },
    "sample_count": 3,
-   "measured_at": "2026-11-28T06:08:46.063070+00:00",
-   "run_url": "https://github.com/hashbender/runnersbench/actions/runs/46115207097"
+   "measured_at": "2026-11-28T07:05:01.973674+00:00",
+   "run_url": "https://github.com/hashbender/runnersbench/actions/runs/46119501692"
   }
  ],
  "colors": {
-  "luxor": "#4269d0"
+  "luxor": "#2f4b7c"
  },
- "errors": []
+ "errors": [
+  {
+   "label": "luxor-ubuntu-medium-4c-8g",
+   "run_id": "46119501692",
+   "benchmark": "docker",
+   "error": "the cached build didn't reuse the npm ci layer"
+  },
+  {
+   "label": "luxor-ubuntu-medium-4c-8g",
+   "run_id": "46119501692",
+   "benchmark": "docker",
+   "error": "the cached build didn't reuse the npm ci layer"
+  }
+ ],
+ "compliance": {
+  "avrea": {
+   "soc2": "Type II",
+   "iso27001": true,
+   "source": "https://avrea.com/trust-security"
+  },
+  "blacksmith": {
+   "soc2": "Type II",
+   "source": "https://www.blacksmith.sh/security"
+  },
+  "boat": {
+   "soc2": "In progress",
+   "source": "https://docs.boat.dev/compliance"
+  },
+  "buildkite": {
+   "soc2": "Type II",
+   "source": "https://buildkite.com/about/security/"
+  },
+  "celesto": {
+   "soc2": "In progress",
+   "note": "ISO 27001 is also in progress.",
+   "source": "https://trust.celesto.ai/"
+  },
+  "depot": {
+   "soc2": "Type II",
+   "source": "https://depot.dev/security"
+  },
+  "github": {
+   "soc2": "Type II",
+   "iso27001": true,
+   "source": "https://docs.github.com/en/enterprise-cloud@latest/admin/overview/accessing-compliance-reports-for-your-enterprise"
+  },
+  "groundbox": {
+   "note": "Says it has no SOC 2 report.",
+   "source": "https://groundbox.dev/compare/blacksmith"
+  },
+  "luxor": {
+   "soc2": "In progress",
+   "note": "Its parent company, Luxor Technology, has a SOC 2 Type II report.",
+   "source": "https://luxor.ai/company/security"
+  },
+  "namespace": {
+   "soc2": "Type II",
+   "source": "https://trust.namespace.so/"
+  },
+  "ubicloud": {
+   "soc2": "Type II",
+   "source": "https://www.ubicloud.com/docs/security/overview"
+  },
+  "warpbuild": {
+   "soc2": "Type II",
+   "source": "https://trust.warpbuild.com/"
+  }
+ }
 }

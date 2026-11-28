@@ -1,0 +1,524 @@
+[
+  {
+    "schema_version": 1,
+    "benchmark_version": 5,
+    "spec": {
+      "provider": "luxor",
+      "name": "Luxor",
+      "label": "luxor-macos-26-small",
+      "arch": "arm64",
+      "os": "macos",
+      "price_per_minute": 0.08,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": true,
+      "notes": "M4 Pro. $0.020 per vCPU-minute.",
+      "pricing_source": "https://luxor.ai/docs/pricing",
+      "rep": 1
+    },
+    "github": {
+      "repository": "hashbender/runnersbench",
+      "run_id": "46119501692",
+      "run_attempt": "1",
+      "sha": "30380fd30a4beb04aa03b0b649346c03e8047233"
+    },
+    "started_at": "2026-11-28T07:05:28.005966+00:00",
+    "finished_at": "2026-11-28T07:07:27.368463+00:00",
+    "system": {
+      "cpu": {
+        "model": "Apple M4 Pro (Virtual)",
+        "vendor": "Apple",
+        "arch": "arm64",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "threads_per_core": null,
+        "sockets": null,
+        "max_mhz": null,
+        "l3_cache": null,
+        "hypervisor": null,
+        "flags": null,
+        "cgroup_cpu_max": null,
+        "lscpu": {}
+      },
+      "memory": {
+        "total_bytes": 8589934592,
+        "cgroup_max": null
+      },
+      "disk": {
+        "workdir": "/Users/runner/actions-runner/_work/_temp",
+        "total_bytes": 449475674112,
+        "free_bytes": 173775941632,
+        "mount": null,
+        "devices": null
+      },
+      "os": {
+        "pretty_name": "macOS 26.7.3",
+        "kernel": "25.6.0",
+        "image_os": "macos26",
+        "image_version": "20261122.1"
+      },
+      "virtualization": "apple",
+      "virtualization_layers": {
+        "vm": "apple",
+        "container": null
+      },
+      "dmi": {
+        "product_name": "VirtualMac2,1"
+      },
+      "network": {
+        "ip": "199.180.135.1",
+        "city": "Seattle",
+        "region": "Washington",
+        "country": "US",
+        "loc": "47.6062,-122.3321",
+        "org": "AS19538 Luxor"
+      },
+      "runner": {
+        "name": "tenki-sandbox-de710c1d-5e36-4939-9949-2c71e7863dd5",
+        "environment": "self-hosted"
+      },
+      "tools": {
+        "docker": null,
+        "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+        "python": "3.12.16"
+      },
+      "wall_seconds": 4.731786
+    },
+    "benchmarks": {
+      "apt_install": {
+        "manager": "brew",
+        "seconds": 4.557890041999997,
+        "wall_seconds": 4.557894417
+      },
+      "cpu_single": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "cpu_multi": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "memory": {
+        "mib_per_second": 33830.34,
+        "wall_seconds": 15.956391249999996
+      },
+      "disk": {
+        "seq_write": {
+          "mb_per_second": 14690.47916,
+          "iops": 14008.932738,
+          "p99_latency_us": 1384.448,
+          "direct": true
+        },
+        "seq_read": {
+          "mb_per_second": 17061.01165,
+          "iops": 16269.64869,
+          "p99_latency_us": 1089.536,
+          "direct": true
+        },
+        "rand_read": {
+          "mb_per_second": 544.546284,
+          "iops": 132944.870342,
+          "p99_latency_us": 162.816,
+          "direct": true
+        },
+        "rand_write": {
+          "mb_per_second": 313.084194,
+          "iops": 76435.637624,
+          "p99_latency_us": 366.592,
+          "direct": true
+        },
+        "wall_seconds": 72.95753770799999
+      },
+      "fsync": {
+        "skipped": "fsync doesn't flush to disk on macOS"
+      },
+      "download": {
+        "mb_per_second": 562.8096640328741,
+        "bytes": 1000000000,
+        "seconds": 1.7767996250000238,
+        "streams": 4,
+        "requests": 20,
+        "errors": [],
+        "wall_seconds": 1.7768704999999727
+      },
+      "compile_redis": {
+        "version": "8.10.3",
+        "jobs": 4,
+        "seconds": 18.136339291000013,
+        "github_download": {
+          "mb_per_second": 5.177308,
+          "bytes": 4780701,
+          "seconds": 0.923395,
+          "connect_seconds": 0.020213,
+          "ttfb_seconds": 0.356239
+        },
+        "cpu_accounting": {
+          "wall_seconds": 18.136346291999985
+        },
+        "wall_seconds": 19.38096625000003
+      },
+      "cache": {
+        "size_mb": 1024,
+        "save_seconds": 4.234673023223877,
+        "restore_seconds": 2.7573459148406982
+      },
+      "docker": {
+        "skipped": "no Docker on macOS runners"
+      }
+    },
+    "cpu_accounting": {
+      "wall_seconds": 119.36248591700001
+    },
+    "timing": {
+      "queue_seconds": 26.0,
+      "job_seconds": 145.0
+    }
+  },
+  {
+    "schema_version": 1,
+    "benchmark_version": 5,
+    "spec": {
+      "provider": "luxor",
+      "name": "Luxor",
+      "label": "luxor-macos-26-small",
+      "arch": "arm64",
+      "os": "macos",
+      "price_per_minute": 0.08,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": true,
+      "notes": "M4 Pro. $0.020 per vCPU-minute.",
+      "pricing_source": "https://luxor.ai/docs/pricing",
+      "rep": 2
+    },
+    "github": {
+      "repository": "hashbender/runnersbench",
+      "run_id": "46119501692",
+      "run_attempt": "1",
+      "sha": "30380fd30a4beb04aa03b0b649346c03e8047233"
+    },
+    "started_at": "2026-11-28T07:05:27.392685+00:00",
+    "finished_at": "2026-11-28T07:07:30.070892+00:00",
+    "system": {
+      "cpu": {
+        "model": "Apple M4 Pro (Virtual)",
+        "vendor": "Apple",
+        "arch": "arm64",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "threads_per_core": null,
+        "sockets": null,
+        "max_mhz": null,
+        "l3_cache": null,
+        "hypervisor": null,
+        "flags": null,
+        "cgroup_cpu_max": null,
+        "lscpu": {}
+      },
+      "memory": {
+        "total_bytes": 8589934592,
+        "cgroup_max": null
+      },
+      "disk": {
+        "workdir": "/Users/runner/actions-runner/_work/_temp",
+        "total_bytes": 449475674112,
+        "free_bytes": 173777899520,
+        "mount": null,
+        "devices": null
+      },
+      "os": {
+        "pretty_name": "macOS 26.7.3",
+        "kernel": "25.6.0",
+        "image_os": "macos26",
+        "image_version": "20261122.1"
+      },
+      "virtualization": "apple",
+      "virtualization_layers": {
+        "vm": "apple",
+        "container": null
+      },
+      "dmi": {
+        "product_name": "VirtualMac2,1"
+      },
+      "network": {
+        "ip": "199.180.135.1",
+        "city": "Seattle",
+        "region": "Washington",
+        "country": "US",
+        "loc": "47.6062,-122.3321",
+        "org": "AS19538 Luxor"
+      },
+      "runner": {
+        "name": "tenki-sandbox-3c0bc73c-a1c1-4c26-a871-1a2fa173402e",
+        "environment": "self-hosted"
+      },
+      "tools": {
+        "docker": null,
+        "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+        "python": "3.12.16"
+      },
+      "wall_seconds": 4.655406542000009
+    },
+    "benchmarks": {
+      "apt_install": {
+        "manager": "brew",
+        "seconds": 5.417257208000024,
+        "wall_seconds": 5.417261958000012
+      },
+      "cpu_single": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "cpu_multi": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "memory": {
+        "mib_per_second": 30494.43,
+        "wall_seconds": 16.526191167000007
+      },
+      "disk": {
+        "seq_write": {
+          "mb_per_second": 12028.848411,
+          "iops": 11470.537262,
+          "p99_latency_us": 1581.056,
+          "direct": true
+        },
+        "seq_read": {
+          "mb_per_second": 13658.749158,
+          "iops": 13024.998333,
+          "p99_latency_us": 1449.984,
+          "direct": true
+        },
+        "rand_read": {
+          "mb_per_second": 395.839449,
+          "iops": 96639.490701,
+          "p99_latency_us": 228.352,
+          "direct": true
+        },
+        "rand_write": {
+          "mb_per_second": 241.032165,
+          "iops": 58845.076995,
+          "p99_latency_us": 514.048,
+          "direct": true
+        },
+        "wall_seconds": 72.82084450000002
+      },
+      "fsync": {
+        "skipped": "fsync doesn't flush to disk on macOS"
+      },
+      "download": {
+        "mb_per_second": 465.31431727604996,
+        "bytes": 1000000000,
+        "seconds": 2.149084958000003,
+        "streams": 4,
+        "requests": 20,
+        "errors": [],
+        "wall_seconds": 2.1491960000000176
+      },
+      "compile_redis": {
+        "version": "8.10.3",
+        "jobs": 4,
+        "seconds": 20.090449500000034,
+        "github_download": {
+          "mb_per_second": 6.740853,
+          "bytes": 4780701,
+          "seconds": 0.709213,
+          "connect_seconds": 0.020811,
+          "ttfb_seconds": 0.143263
+        },
+        "cpu_accounting": {
+          "wall_seconds": 20.09045658299999
+        },
+        "wall_seconds": 21.114673166000046
+      },
+      "cache": {
+        "size_mb": 1024,
+        "save_seconds": 3.8681740760803223,
+        "restore_seconds": 2.756824254989624
+      },
+      "docker": {
+        "skipped": "no Docker on macOS runners"
+      }
+    },
+    "cpu_accounting": {
+      "wall_seconds": 122.68460191700001
+    },
+    "timing": {
+      "queue_seconds": 26.0,
+      "job_seconds": 146.0
+    }
+  },
+  {
+    "schema_version": 1,
+    "benchmark_version": 5,
+    "spec": {
+      "provider": "luxor",
+      "name": "Luxor",
+      "label": "luxor-macos-26-small",
+      "arch": "arm64",
+      "os": "macos",
+      "price_per_minute": 0.08,
+      "billing": {
+        "increment_seconds": 1
+      },
+      "enabled": true,
+      "notes": "M4 Pro. $0.020 per vCPU-minute.",
+      "pricing_source": "https://luxor.ai/docs/pricing",
+      "rep": 3
+    },
+    "github": {
+      "repository": "hashbender/runnersbench",
+      "run_id": "46119501692",
+      "run_attempt": "1",
+      "sha": "30380fd30a4beb04aa03b0b649346c03e8047233"
+    },
+    "started_at": "2026-11-28T07:05:29.171080+00:00",
+    "finished_at": "2026-11-28T07:07:30.998907+00:00",
+    "system": {
+      "cpu": {
+        "model": "Apple M4 Pro (Virtual)",
+        "vendor": "Apple",
+        "arch": "arm64",
+        "logical_cpus": 4,
+        "available_cpus": 4,
+        "threads_per_core": null,
+        "sockets": null,
+        "max_mhz": null,
+        "l3_cache": null,
+        "hypervisor": null,
+        "flags": null,
+        "cgroup_cpu_max": null,
+        "lscpu": {}
+      },
+      "memory": {
+        "total_bytes": 8589934592,
+        "cgroup_max": null
+      },
+      "disk": {
+        "workdir": "/Users/runner/actions-runner/_work/_temp",
+        "total_bytes": 449475674112,
+        "free_bytes": 172914192384,
+        "mount": null,
+        "devices": null
+      },
+      "os": {
+        "pretty_name": "macOS 26.7.3",
+        "kernel": "25.6.0",
+        "image_os": "macos26",
+        "image_version": "20261122.1"
+      },
+      "virtualization": "apple",
+      "virtualization_layers": {
+        "vm": "apple",
+        "container": null
+      },
+      "dmi": {
+        "product_name": "VirtualMac2,1"
+      },
+      "network": {
+        "ip": "199.180.135.1",
+        "city": "Seattle",
+        "region": "Washington",
+        "country": "US",
+        "loc": "47.6062,-122.3321",
+        "org": "AS19538 Luxor"
+      },
+      "runner": {
+        "name": "tenki-sandbox-78d49963-df08-4a85-983c-752db1cdd493",
+        "environment": "self-hosted"
+      },
+      "tools": {
+        "docker": null,
+        "gcc": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+        "python": "3.12.16"
+      },
+      "wall_seconds": 4.623723541999993
+    },
+    "benchmarks": {
+      "apt_install": {
+        "manager": "brew",
+        "seconds": 5.39723833299999,
+        "wall_seconds": 5.397242417000001
+      },
+      "cpu_single": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "cpu_multi": {
+        "skipped": "sysbench's CPU test doesn't do real work on macOS"
+      },
+      "memory": {
+        "mib_per_second": 30407.12,
+        "wall_seconds": 15.778623332999985
+      },
+      "disk": {
+        "seq_write": {
+          "mb_per_second": 11203.916777,
+          "iops": 10683.887741,
+          "p99_latency_us": 1761.28,
+          "direct": true
+        },
+        "seq_read": {
+          "mb_per_second": 12779.262242,
+          "iops": 12186.25425,
+          "p99_latency_us": 1646.592,
+          "direct": true
+        },
+        "rand_read": {
+          "mb_per_second": 402.658015,
+          "iops": 98304.246384,
+          "p99_latency_us": 228.352,
+          "direct": true
+        },
+        "rand_write": {
+          "mb_per_second": 236.856981,
+          "iops": 57825.411639,
+          "p99_latency_us": 544.768,
+          "direct": true
+        },
+        "wall_seconds": 72.85208641599996
+      },
+      "fsync": {
+        "skipped": "fsync doesn't flush to disk on macOS"
+      },
+      "download": {
+        "mb_per_second": 364.6456917729267,
+        "bytes": 1000000000,
+        "seconds": 2.7423880839999697,
+        "streams": 4,
+        "requests": 20,
+        "errors": [],
+        "wall_seconds": 2.7424942079999823
+      },
+      "compile_redis": {
+        "version": "8.10.3",
+        "jobs": 4,
+        "seconds": 19.943523166000034,
+        "github_download": {
+          "mb_per_second": 27.250554,
+          "bytes": 4780701,
+          "seconds": 0.175435,
+          "connect_seconds": 0.016191,
+          "ttfb_seconds": 0.082352
+        },
+        "cpu_accounting": {
+          "wall_seconds": 19.943525667000017
+        },
+        "wall_seconds": 20.43247333299996
+      },
+      "cache": {
+        "size_mb": 1024,
+        "save_seconds": 4.005343914031982,
+        "restore_seconds": 2.9463441371917725
+      },
+      "docker": {
+        "skipped": "no Docker on macOS runners"
+      }
+    },
+    "cpu_accounting": {
+      "wall_seconds": 121.82766029099997
+    },
+    "timing": {
+      "queue_seconds": 27.0,
+      "job_seconds": 149.0
+    }
+  }
+]

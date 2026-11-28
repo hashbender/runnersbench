@@ -52,7 +52,7 @@
     "name": "Daniel Lockyer",
     "url": "https://x.com/daniellockyer"
    },
-   "dateModified": "2026-11-28T06:11:36.213938+00:00",
+   "dateModified": "2026-11-28T07:08:08.724363+00:00",
    "isAccessibleForFree": true,
    "sameAs": "https://github.com/lockyer-labs/runnersbench",
    "keywords": [
@@ -71,9 +71,12 @@
     "Seq write (MB/s)",
     "4k rand read (IOPS)",
     "4k rand write (IOPS)",
+    "fsync writes (/s)",
     "Download (MB/s)",
     "Cache save 1 GB (s)",
     "Cache restore 1 GB (s)",
+    "Docker build, no cache (s)",
+    "Docker build, cached (s)",
     "Redis build (s)",
     "$ per Redis build"
    ],
@@ -104,7 +107,7 @@
      "name": "Which GitHub Actions runner is the fastest?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 20.0 s. Build time is the median of three runs of make -j on the Redis source."
+      "text": "On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 19.9 s. Build time is the median of three runs of make -j on the Redis source."
      }
     },
     {
@@ -112,7 +115,7 @@
      "name": "Which GitHub Actions runner is the cheapest?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "On Linux x64, Luxor was cheapest at $0.0032 per Redis build, against $0.0032 for Luxor. On macOS, Luxor was cheapest at $0.0267 per Redis build, against $0.0267 for Luxor. Costs use each provider's list price and how it rounds a job's duration."
+      "text": "On Linux x64, Luxor was the cheapest pay-as-you-go runner at $0.0032 per Redis build, against $0.0032 for Luxor. On macOS, Luxor was the cheapest pay-as-you-go runner at $0.0267 per Redis build, against $0.0267 for Luxor. Costs use each provider's list price and how it rounds a job's duration; providers that need a plan or charge other fees are listed but not ranked cheapest."
      }
     },
     {
@@ -128,7 +131,7 @@
      "name": "How are the runners benchmarked?",
      "acceptedAnswer": {
       "@type": "Answer",
-      "text": "Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, fio sequential and 4k random disk tests, a download from Cloudflare, package installs, a 1 GB actions/cache save and restore, and a Redis build. Queue time comes from the GitHub API. The site shows each metric's median and the spread across runs."
+      "text": "Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, fio sequential, 4k random and fsync disk tests, a 10-second sustained download test, package installs, a 1 GB actions/cache save and restore, a cold and a cached Docker build, and a Redis build. Queue time comes from the GitHub API. The site shows each metric's median and the spread across runs."
      }
     },
     {
@@ -147,51 +150,77 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap">
-  <link rel="stylesheet" href="style.css?v=46115207097">
-  <script src="app.js?v=46115207097" defer></script>
+  <link rel="stylesheet" href="style.css?v=46119501692">
+  <script src="app.js?v=46119501692" defer></script>
 </head>
 <body>
   <header class="hero">
     <div class="wrap">
       <nav>
         <span class="brand">runners<span>/bench</span></span>
-        <span class="actions">
-          <a class="button" href="https://x.com/daniellockyer" aria-label="X">𝕏</a>
-          <a class="button" href="https://github.com/lockyer-labs/runnersbench">GitHub</a>
+        <span class="links-top">
+          <a class="wide-only" href="https://github.com/lockyer-labs/runnersbench/issues/new?template=provider.yml">Suggest a provider</a>
+          <a href="https://github.com/lockyer-labs/runnersbench">GitHub</a>
+          <a href="https://x.com/daniellockyer">𝕏</a>
         </span>
       </nav>
       <h1>CI runner benchmarks</h1>
       <p class="lede" id="lede">1 GitHub Actions runner providers, benchmarked side by side on Linux x64, arm64 and macOS. Refreshed weekly.</p>
       <div id="tabs" class="tabs" role="tablist"></div>
       <div id="stats" class="stats"></div>
-      <p id="meta" class="meta"></p>
+      <div class="hero-foot">
+        <p id="meta" class="meta"></p>
+        <a class="sponsor" href="https://go.polylane.com/runnersbench">Sponsored by <picture><source media="(prefers-color-scheme: dark)" srcset="polylane.svg"><img src="polylane-green.svg" alt="Polylane" width="160" height="44"></picture></a>
+      </div>
     </div>
-    <div class="horizon" aria-hidden="true"></div>
   </header>
+  <nav class="section-nav" aria-label="Sections">
+    <div class="wrap">
+      <a href="#s-benchmarks">Benchmarks</a>
+      <a href="#s-leaderboards">Leaderboards</a>
+      <a href="#s-runners">Runners</a>
+      <a href="#s-locations">Locations</a>
+      <a href="#questions">Questions</a>
+    </div>
+  </nav>
   <main class="wrap">
-    <section>
+    <section id="s-benchmarks">
       <h2>Benchmarks</h2>
-      <p class="caption" id="benchmarks-caption"></p>
+      <div class="table-tools">
+        <p class="caption" id="benchmarks-caption"></p>
+        <span class="heat-controls">
+          <span class="heat-legend" id="heat-legend" hidden><span>best</span><span class="heat-scale" aria-hidden="true"></span><span>¼ or worse</span></span>
+          <label class="toggle"><input type="checkbox" id="heat-toggle"> Heat map</label>
+        </span>
+      </div>
       <div class="scroll bleed"><table id="benchmarks"></table></div>
+      <p class="caption pricing-notes" hidden></p>
     </section>
-    <section>
+    <section id="s-leaderboards">
       <h2>Leaderboards</h2>
-      <p class="note">Each metric ranked from best to worst.</p>
+      <p class="note">Each metric ranked from best to worst, or combine the ones you care about.</p>
+      <div id="custom" class="board custom"></div>
       <div id="boards" class="grid"></div>
     </section>
-    <section>
+    <section id="s-runners">
       <h2>Runners</h2>
-      <p class="note">What each provider's runner reported about itself. Measured links to the run its results came from.</p>
+      <p class="note">What each provider's runner reported about itself. Compliance is what each provider states on its own site, linked to the source.</p>
       <p class="caption" id="runners-caption"></p>
       <div class="scroll"><table id="runners"></table></div>
+      <p class="caption pricing-notes" hidden></p>
+    </section>
+    <section id="s-locations">
+      <h2>Locations</h2>
+      <p class="note">Approximate, from each runner's IP address: where its traffic reaches the internet.</p>
+      <div id="map" class="map"></div>
     </section>
     <section id="questions">
       <h2>Questions</h2>
       <div class="faq">
-        <div><h3>Which GitHub Actions runner is the fastest?</h3><p>On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 20.0 s. Build time is the median of three runs of make -j on the Redis source.</p></div>
-        <div><h3>Which GitHub Actions runner is the cheapest?</h3><p>On Linux x64, Luxor was cheapest at $0.0032 per Redis build, against $0.0032 for Luxor. On macOS, Luxor was cheapest at $0.0267 per Redis build, against $0.0267 for Luxor. Costs use each provider&#x27;s list price and how it rounds a job&#x27;s duration.</p></div>
+        <div><h3>Which GitHub Actions runner is the fastest?</h3><p>On Linux x64, Luxor built Redis fastest, in 23.6 s. On macOS, Luxor built Redis fastest, in 19.9 s. Build time is the median of three runs of make -j on the Redis source.</p></div>
+        <div><h3>Which GitHub Actions runner is the cheapest?</h3><p>On Linux x64, Luxor was the cheapest pay-as-you-go runner at $0.0032 per Redis build, against $0.0032 for Luxor. On macOS, Luxor was the cheapest pay-as-you-go runner at $0.0267 per Redis build, against $0.0267 for Luxor. Costs use each provider&#x27;s list price and how it rounds a job&#x27;s duration; providers that need a plan or charge other fees are listed but not ranked cheapest.</p></div>
         <div><h3>Which runner providers are compared?</h3><p>Linux x64: Luxor. macOS: Luxor. Linux runners are each provider&#x27;s 4 vCPU size on Ubuntu 24.04; Macs are each provider&#x27;s smallest Apple Silicon size on macOS 26.</p></div>
-        <div><h3>How are the runners benchmarked?</h3><p>Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, fio sequential and 4k random disk tests, a download from Cloudflare, package installs, a 1 GB actions/cache save and restore, and a Redis build. Queue time comes from the GitHub API. The site shows each metric&#x27;s median and the spread across runs.</p></div>
+        <div><h3>How are the runners benchmarked?</h3><p>Every runner runs the same script at the same moment, three times: sysbench CPU and memory tests after a warm-up, fio sequential, 4k random and fsync disk tests, a 10-second sustained download test, package installs, a 1 GB actions/cache save and restore, a cold and a cached Docker build, and a Redis build. Queue time comes from the GitHub API. The site shows each metric&#x27;s median and the spread across runs.</p></div>
         <div><h3>How often are the results updated?</h3><p>The benchmark runs weekly on GitHub Actions and the code is open source. These results were updated on 28 November 2026, covering 1 providers.</p></div>
       </div>
     </section>
@@ -202,9 +231,10 @@
   </main>
   <footer>
     <div class="wrap">
-      <p>Every runner runs <code>bench/run.py</code>: sysbench, fio, a download test and a Redis build.</p>
+      <p>Every runner runs <code>bench/run.py</code>: sysbench, fio, a download test, Docker builds and a Redis build.</p>
       <p class="links">
         <a href="https://github.com/lockyer-labs/runnersbench">Source and methodology</a>
+        <a href="https://github.com/lockyer-labs/runnersbench/issues/new?template=provider.yml">Suggest a provider</a>
         <a href="report.md">Markdown report</a>
         <a href="data.json">data.json</a>
         <a href="results.json">Raw results</a>
